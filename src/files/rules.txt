@@ -1,0 +1,88 @@
+<body style="font:Helvetica">
+
+<h2>Draughts or Checkers</h2>
+
+<h3>Equipment</h3>
+
+<p>The game of Draughts is played on a standard Chess board 64 black and 
+        white chequered squares.&nbsp; Each player has 12 pieces normally in the 
+        form of fat round counters. &nbsp; The real shades of the pieces and the 
+        board do not necessarily need to be black and white but they are normally 
+        referred to as black and white, regardless.&nbsp; The board is placed 
+        between the two opponents so that the near right-hand corner square is 
+        white for both players (in the same way as for Chess).</p>
+
+
+<h3>Preparation and Objective</h3>
+
+<p>Black always plays first.&nbsp; A coin is tossed to decide which player 
+        will be black. &nbsp; Each player's pieces are placed on the 12 black 
+        squares nearest to that player. &nbsp; The white squares are not used 
+        at all in the game - the pieces only move diagonally and so stay on the 
+        black squares throughout.</p>
+
+<p>The objective of the game is to take all of the opponent's pieces or 
+        to produce a position such that the opponent is unable to move.</p>
+
+
+<h3>Play</h3>
+
+<p>Players take turns to move a piece of their own colour.&nbsp; Any piece 
+        that reaches the far edge of the board is immediately crowned and is thereafter 
+        known as a "King".&nbsp; The act of crowning is a physical one 
+        - another piece of the same shade is placed on top of the piece in order 
+        to distinguish it from an ordinary piece.&nbsp; </p>
+
+<p>Until a piece is "crowned", it can only move and capture in 
+        a diagonally forwards direction. &nbsp; Kings are allowed to move and 
+        capture diagonally forwards and backwards and are consequently more powerful 
+        and valuable than ordinary pieces.&nbsp; However, ordinary pieces can 
+        capture Kings.</p>
+
+<p>Whenever a piece has an opponent's piece adjacent to it and the square 
+        immediately beyond the opponent's piece is vacant, the opponent's piece 
+        can be captured.&nbsp; If the player has the opportunity to capture one 
+        or more of the opponent's pieces, then the player must do so.&nbsp; A 
+        piece is taken by simply hopping over it into the vacant square beyond 
+        and removing it from the board.&nbsp; Unlike an ordinary move, a capturing 
+        move can consist of several such hops - if a piece takes an opponent's 
+        piece and the new position allows it to take another piece, then it must 
+        do so straight away.&nbsp; The move finishes only when the position of 
+        the capturing piece no longer allows it to taken any more pieces or when 
+        an uncrowned piece arrives at the far edge of the board and is crowned.</p>
+
+<p>If more than one piece can capture, then the player is entirely free 
+        to choose which of those pieces to move.&nbsp; Likewise, if a capturing 
+        piece is able to capture in more than one direction, the player is free 
+        to choose which direction to move in.&nbsp; i.e. it is not compulsory 
+        to move the piece or take the route that will result in the maximum number 
+        of captures.&nbsp;&nbsp; </p>
+
+<p>If no capturing moves are available, then an ordinary move is made by 
+        moving a piece one square diagonally.&nbsp; </p>
+
+<p>In the past, the "huffing" rule was used.&nbsp; For this, if 
+        a player noticed that the opponent had failed to capture when the option 
+        was open (even if the offending piece had already captured one or more 
+        pieces that turn), the player can huff the offending piece before the 
+        next move is made and it is removed from the board.&nbsp; Nowadays, this 
+        rule is rarely used.&nbsp; Instead a player just points out the error 
+        and the opponent is forced to make the correct move.</p>
+
+
+<h3>Finishing</h3>
+
+<p>The game is won by the player who first manages to take all his opponent's 
+        pieces or renders them unable to move. </p>
+
+<p>A draw occurs by agreement at any point during the game.&nbsp; If a player 
+        refuses the offer of a draw, that player is required to force a win or 
+        show a decided advantage within 40 of that players own moves from that 
+        point. Draws are fairly common in the game of draughts - especially at 
+        the top level of the game.</p>
+
+<p>&nbsp;</p>
+
+<p>Source: <a href="http://www.mastersgames.com/rules/draughts-rules.htm">mastersgames.com/rules/draughts-rules.htm</a></p>
+
+</body>
