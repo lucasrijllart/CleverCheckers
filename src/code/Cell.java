@@ -32,26 +32,26 @@ public class Cell {
         king = false;
     }
 
-    public int getxPos() { return xPos; }
-    public int getyPos() { return yPos; }
+    int getxPos() { return xPos; }
+    int getyPos() { return yPos; }
 
-    public void setBlack() {
+    void setBlack() {
         black = true;
         free = false;
     }
 
-    public void setWhite() {
+    void setWhite() {
         white = true;
         free = false;
     }
 
-    public void setFree() {
+    void setFree() {
         white = false;
         black = false;
         free = true;
     }
 
-    public void printCellData() {
+    void printCellData() {
         String state;
         if (black) state = "black";
         else state = "white";
@@ -59,29 +59,29 @@ public class Cell {
         System.out.println("Cell"+"["+xPos+","+yPos+"],"+state);
     }
 
-    public boolean isBlack() {
+    boolean isBlack() {
         return black;
     }
 
-    public boolean isWhite() {
+    boolean isWhite() {
         return white;
     }
 
-    public boolean isFree() {
+    boolean isFree() {
         return free;
     }
 
-    public boolean isLighter() { return lighter; }
+    boolean isLighter() { return lighter; }
 
-    public void setLighter() {
+    void setLighter() {
         lighter = true;
     }
 
-    public boolean isSelected() { return selected; }
+    boolean isSelected() { return selected; }
 
-    public void setSelected(boolean value) { selected = value; }
+    void setSelected(boolean value) { selected = value; }
 
-    public boolean isKing() { return king; }
+    boolean isKing() { return king; }
 
     public void setKing() { king = true; }
 }

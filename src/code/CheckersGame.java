@@ -10,7 +10,7 @@ public class CheckersGame {
     private Board board;
     private Window gui;
 
-    public int player;
+    int player;
 
     private Player player1;
     private Player player2;
@@ -22,7 +22,7 @@ public class CheckersGame {
     /**
      * New game with player1=human player2=AI
      */
-    public CheckersGame() {
+    private CheckersGame() {
         board = new Board(this, 8, 8);
         newGame("Player", true, 0, "AI", true, 3);
         //create GUI
@@ -30,14 +30,14 @@ public class CheckersGame {
     }
 
 
-    public void newGame(String p1Name, boolean p1Human, int p1Diff, String p2Name, boolean p2Human, int p2Diff) {
+    void newGame(String p1Name, boolean p1Human, int p1Diff, String p2Name, boolean p2Human, int p2Diff) {
         board.reset();
         this.player1 = new Player(1, board, p1Name, p1Human, p1Diff);
         this.player2 = new Player(2, board, p2Name, p2Human, p2Diff);
         player = 1;
     }
 
-    public void gotInput(Cell selected, Cell target) {
+    void gotInput(Cell selected, Cell target) {
         if (isGameRunning()) {
             if (player == 1) {
                 System.out.println("Player " + player);
@@ -59,6 +59,9 @@ public class CheckersGame {
                     gui.infoField.setText(me.getReason());
                 }
             }
+        } else {
+            gui.infoField.setText("WINNER");
+
         }
     }
 
@@ -78,7 +81,7 @@ public class CheckersGame {
         return false;
     }
 
-    public Board getBoard() {
+    Board getBoard() {
         return board;
     }
 }

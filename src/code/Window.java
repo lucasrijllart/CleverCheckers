@@ -20,8 +20,7 @@ class Window extends JFrame {
 
     private Board board;
     private CheckersGame game;
-    public JTextField infoField;
-    private DefaultTableModel dtm;
+    JTextField infoField;
 
     //player names
     private TextField player1Name;
@@ -68,7 +67,7 @@ class Window extends JFrame {
     }
 
     private void createTableView() {
-        dtm = new DefaultTableModel(board.getRowCount(), board.getColumnCount()) {
+        DefaultTableModel dtm = new DefaultTableModel(board.getRowCount(), board.getColumnCount()) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }

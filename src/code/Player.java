@@ -1,7 +1,9 @@
 package code;
 
 /**
- * Created by Lucas on 26/11/2016.
+ * Player class, contains information and methods for players.
+ * @author Lucas
+ * @version 0.1
  */
 public class Player {
 
