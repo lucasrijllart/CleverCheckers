@@ -41,7 +41,8 @@ class Window extends JFrame {
     //label data
     private Font helv20 = new Font("Helvetica", Font.PLAIN, 20);
     private Font helv14 = new Font("Helvetica", Font.PLAIN, 14);
-    private Color textFore = new Color(191, 192, 190);
+    private Color textForeground = new Color(37, 35, 32);
+    private Color backgroundColor = new Color(191, 192, 190);
 
     //click vars
     private JTable jt;
@@ -55,13 +56,12 @@ class Window extends JFrame {
         board = b;
 
         setLayout(new BorderLayout());
-        setDefaultCloseOperation (WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         createMenus();
         createTableView();
         createTextField();
 
-        setSize (700, 500);
         pack();
         setVisible (true);
     }
@@ -193,14 +193,20 @@ class Window extends JFrame {
         final JFrame newGameFrame = new JFrame("New game...");
         newGameFrame.setDefaultCloseOperation(Window.DISPOSE_ON_CLOSE);
         newGameFrame.setAlwaysOnTop(true);
+        newGameFrame.setBackground(backgroundColor);
+        newGameFrame.setResizable(false);
+
         newGameFrame.setLayout(new BorderLayout());
-        newGameFrame.setBackground(new Color(37, 35, 32));
 
         // WEST
         newGameFrame.add(createPlayer1Panel(), BorderLayout.WEST);
 
         // CENTER
-        newGameFrame.add(new JSeparator(JSeparator.VERTICAL), BorderLayout.CENTER);
+        Panel sepPanel = new Panel();
+        sepPanel.setLayout(new BorderLayout());
+        sepPanel.setBackground(backgroundColor);
+        sepPanel.add(new JSeparator(JSeparator.VERTICAL), BorderLayout.CENTER);
+        newGameFrame.add(sepPanel, BorderLayout.CENTER);
 
         // EAST
         newGameFrame.add(createPlayer2Panel(), BorderLayout.EAST);
@@ -208,6 +214,7 @@ class Window extends JFrame {
         // SOUTH
         Panel gameSetup = new Panel();
         gameSetup.setLayout(new BorderLayout());
+        gameSetup.setBackground(backgroundColor);
         gameSetup.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.NORTH);
 
         Panel launchButtonPanel = new Panel();
@@ -234,6 +241,7 @@ class Window extends JFrame {
 
         //show on middle of screen
         newGameFrame.pack();
+        newGameFrame.setLocationRelativeTo(this);
         newGameFrame.setVisible(true);
         newGameFrame.repaint();
     }
@@ -282,12 +290,13 @@ class Window extends JFrame {
         //Player 1 box
         Panel player1Panel = new Panel();
         player1Panel.setLayout(new GridLayout(5, 1));
+        player1Panel.setBackground(backgroundColor);
 
         // title
         Panel p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.CENTER));
-        Label l1 = new Label("White");
-        l1.setForeground(textFore);
+        Label l1 = new Label("Black");
+        l1.setForeground(textForeground);
         l1.setFont(helv20);
         p.add(l1);
         player1Panel.add(p);  // item 1
@@ -296,7 +305,7 @@ class Window extends JFrame {
         p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         player1HumanButton = new JRadioButton("Human", true);
-        player1HumanButton.setForeground(textFore);
+        player1HumanButton.setForeground(textForeground);
         player1HumanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -306,7 +315,7 @@ class Window extends JFrame {
             }
         });
         JRadioButton player1AIButton = new JRadioButton("AI");
-        player1AIButton.setForeground(textFore);
+        player1AIButton.setForeground(textForeground);
         player1AIButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -326,7 +335,7 @@ class Window extends JFrame {
         p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         Label l2 = new Label("Name:");
-        l2.setForeground(textFore);
+        l2.setForeground(textForeground);
         l2.setFont(helv14);
         p.add(l2);
         player1Name = new TextField("Human", 6);
@@ -338,7 +347,7 @@ class Window extends JFrame {
         player1DifficultyLabel.setLayout(new FlowLayout(FlowLayout.LEFT));
         player1DifficultyLabel.setVisible(false);
         Label l3 = new Label("Difficulty:");
-        l3.setForeground(textFore);
+        l3.setForeground(textForeground);
         l3.setFont(helv14);
         player1DifficultyLabel.add(l3);
         player1Panel.add(player1DifficultyLabel);  // item 4
@@ -352,7 +361,7 @@ class Window extends JFrame {
         player1DifficultySlider.addChangeListener(null);
         player1DifficultySlider.setPaintTicks(true);
         player1DifficultySlider.setSnapToTicks(true);
-        player1DifficultySlider.setForeground(textFore);
+        player1DifficultySlider.setForeground(textForeground);
         /*
         Hashtable player1DifficultyTable = new Hashtable();
         player1DifficultyTable.put(new Integer(1), new Label("1");
@@ -369,12 +378,13 @@ class Window extends JFrame {
         //Player 2 box
         Panel player2Panel = new Panel();
         player2Panel.setLayout(new GridLayout(5, 1));
+        player2Panel.setBackground(backgroundColor);
 
         // title
         Panel p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.CENTER));
-        Label l1 = new Label("Black");
-        l1.setForeground(textFore);
+        Label l1 = new Label("White");
+        l1.setForeground(textForeground);
         l1.setFont(helv20);
         p.add(l1);
         player2Panel.add(p);  // item 1
@@ -383,7 +393,7 @@ class Window extends JFrame {
         p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         player2HumanButton = new JRadioButton("Human");
-        player2HumanButton.setForeground(textFore);
+        player2HumanButton.setForeground(textForeground);
         player2HumanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -393,7 +403,7 @@ class Window extends JFrame {
             }
         });
         JRadioButton player2AIButton = new JRadioButton("AI", true);
-        player2AIButton.setForeground(textFore);
+        player2AIButton.setForeground(textForeground);
         player2AIButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -413,7 +423,7 @@ class Window extends JFrame {
         p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         Label l2 = new Label("Name:");
-        l2.setForeground(textFore);
+        l2.setForeground(textForeground);
         l2.setFont(helv14);
         p.add(l2);
         player2Name = new TextField("AI", 6);
@@ -424,7 +434,7 @@ class Window extends JFrame {
         player2DifficultyLabel = new Panel();
         player2DifficultyLabel.setLayout(new FlowLayout(FlowLayout.LEFT));
         Label l3 = new Label("Difficulty:");
-        l3.setForeground(textFore);
+        l3.setForeground(textForeground);
         l3.setFont(helv14);
         player2DifficultyLabel.add(l3);
         player2Panel.add(player2DifficultyLabel);  // item 4
@@ -437,7 +447,7 @@ class Window extends JFrame {
         player2DifficultySlider.addChangeListener(null);
         player2DifficultySlider.setPaintTicks(true);
         player2DifficultySlider.setSnapToTicks(true);
-        player2DifficultySlider.setForeground(textFore);
+        player2DifficultySlider.setForeground(textForeground);
         /*
         Hashtable player1DifficultyTable = new Hashtable();
         player1DifficultyTable.put(new Integer(1), new Label("1");
