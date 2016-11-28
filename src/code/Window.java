@@ -50,6 +50,9 @@ class Window extends JFrame {
     private Cell selectedCell;
     private Cell targetCell;
 
+    //menu vars
+    private boolean hints = true;
+
     Window(CheckersGame g, Board b) {
         super("AI Checkers");
         game = g;
@@ -173,17 +176,28 @@ class Window extends JFrame {
             }
         });
 
-        JMenuItem showHints = new JMenuItem("Show hints");
-        showHints.addActionListener(new ActionListener() {
+        JMenuItem showSimplifiedRules = new JMenuItem("Simplified rules");
+        showSimplifiedRules.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                displaySimplifiedRules();
             }
         });
+
+        JCheckBoxMenuItem showHints = new JCheckBoxMenuItem("Show hints");
+        showHints.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                hints = !hints;
+            }
+        });
+        showHints.setState(true);
 
         game.add(newGame);
         game.addSeparator();
         game.add(exitGame);
         mb.add(game);
         help.add(showRules);
+        help.add(showSimplifiedRules);
+        help.addSeparator();
         help.add(showHints);
         mb.add(help);
         this.setJMenuBar(mb);
@@ -247,11 +261,10 @@ class Window extends JFrame {
     }
 
     private void displayRules() {
-        JFrame rulesFrame = new JFrame("The rules of Draughts");
+        JFrame rulesFrame = new JFrame("The rules of Checkers/Draughts");
         rulesFrame.setDefaultCloseOperation(Window.DISPOSE_ON_CLOSE);
         rulesFrame.setAlwaysOnTop(true);
 
-        System.out.println("here");
         Path filePath = Paths.get(this.getClass().getResource("/files/rules.txt").getPath());
         ArrayList<String> lines;
         String html = "";
@@ -282,8 +295,34 @@ class Window extends JFrame {
             }
         });
         rulesFrame.add(new JScrollPane(ep));
-        rulesFrame.setVisible(true);
+        rulesFrame.pack();
         rulesFrame.setSize(500, 500);
+        rulesFrame.setLocationRelativeTo(this);
+        rulesFrame.setVisible(true);
+    }
+
+    private void displaySimplifiedRules() {
+        JFrame simpleRulesFrame = new JFrame("Simplified rules");
+        simpleRulesFrame.setDefaultCloseOperation(Window.DISPOSE_ON_CLOSE);
+        simpleRulesFrame.setAlwaysOnTop(true);
+
+        String simplifiedRules = "Simplified rules of Checkers/Draughts\n\n" +
+                "Goal:\nCapture all pieces of your opponent\n\n" +
+                "Actions:\n" +
+                "1: move piece diagonally by 1 square\n\n" +
+                "2: capture an opposing piece by moving diagonally by\n" +
+                "   2 squares, going over the piece you want to capture\n\n" +
+                "3: if a piece reaches the other side of the board,\n" +
+                "   it becomes a kingkings can move and take backwards";
+
+        Panel p = new Panel();
+        TextArea ta = new TextArea(simplifiedRules);
+        ta.setEditable(false);
+        simpleRulesFrame.add(ta);
+        simpleRulesFrame.pack();
+        simpleRulesFrame.setSize(400, 280);
+        simpleRulesFrame.setLocationRelativeTo(this);
+        simpleRulesFrame.setVisible(true);
     }
 
     private Panel createPlayer1Panel() {
