@@ -91,7 +91,7 @@ class Window extends JFrame {
 
         jt.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseReleased(MouseEvent e) {
                 JTable tableTarget = (JTable)e.getSource();
                 int row = tableTarget.getSelectedRow();
                 int col = tableTarget.getSelectedColumn();
