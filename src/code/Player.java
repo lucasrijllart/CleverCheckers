@@ -124,12 +124,12 @@ public class Player {
 
     public void AIMakeMove() {
         switch (difficulty) {
-            case 1: difficulty1();
+            case 1: difficulty1(); break;
+            case 2: difficulty2(); break;
         }
     }
 
     private void difficulty1() {
-        System.out.println("Diff 1");
         ArrayList<int[]> possibleMoves = new ArrayList<>();
         ArrayList<int[]> possibleTakes = new ArrayList<>();
         ArrayList<Cell> allPieces;
@@ -153,6 +153,7 @@ public class Player {
             if (tryMove != null)
                 possibleMoves.add(tryMove);
         }
+        /*
         System.out.println("Takes:");
         for (int[] a : possibleTakes) {
             System.out.println(Arrays.toString(a));
@@ -161,15 +162,16 @@ public class Player {
         for (int[] a : possibleMoves) {
             System.out.println(Arrays.toString(a));
         }
+        */
         int[] nextMove;
         if (possibleTakes.size() == 1) {
             nextMove = possibleTakes.get(0);
         } else if (possibleTakes.size() > 1) {
-            nextMove = possibleMoves.get(new Random().nextInt(possibleMoves.size()));
+            nextMove = possibleTakes.get(new Random().nextInt(possibleMoves.size()));
         } else {
             nextMove = possibleMoves.get(new Random().nextInt(possibleMoves.size()));
         }
-        System.out.println(Arrays.toString(nextMove));
+        System.out.println("AI Move:" + Arrays.toString(nextMove));
 
         try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
 
@@ -178,6 +180,10 @@ public class Player {
         } catch (MoveException e) {
             System.out.println(e.getReason());
         }
+    }
+
+    private void difficulty2() {
+
     }
 
     private boolean minimaxBlack(Cell selection, Cell target) throws MoveException {

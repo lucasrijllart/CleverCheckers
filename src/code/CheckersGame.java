@@ -24,7 +24,7 @@ public class CheckersGame {
      */
     private CheckersGame() {
         board = new Board(this, 8, 8);
-        newGame("Player", true, 0, "AI", true, 3);
+        newGame("Player", true, 0, "AI", false, 1);
         //create GUI
         gui = new Window(this, board);
     }
@@ -34,27 +34,42 @@ public class CheckersGame {
         board.reset();
         this.player1 = new Player(1, board, p1Name, p1Human, p1Diff);
         this.player2 = new Player(2, board, p2Name, p2Human, p2Diff);
-        player = 1;
+
+        if (!player1.isHuman()) {
+            //make AI play
+            player1.AIMakeMove();
+            player = 2;
+        } else {
+            player = 1;
+        }
     }
 
-    void gotInput(Cell selected, Cell target) {
+    boolean gotInput(Cell selected, Cell target) {
         if (isGameRunning()) {
             if (player == 1) {
                 System.out.println("Player " + player);
-                try {
+                try { //player 1 makes move
                     player1.tryMove(selected, target);
                     gui.infoField.setText("Move made");
+                    //gui.updateMove();
+                    System.out.println("finished updating");
                     player = 2;
+                    makeAIMove();
                 } catch (MoveException me) {
                     gui.infoField.setText(me.getReason());
                 }
             } else {
                 System.out.println("Player " + player);
-
                 try {
                     player2.tryMove(selected, target);
                     gui.infoField.setText("Move made");
-                    player = 1;
+                    if (!player1.isHuman()) {
+                        System.out.println("Player 1");
+                        player1.AIMakeMove();
+                        player = 2;
+                    } else {
+                        player = 1;
+                    }
                 } catch (MoveException me) {
                     gui.infoField.setText(me.getReason());
                 }
@@ -62,6 +77,20 @@ public class CheckersGame {
         } else {
             gui.infoField.setText("WINNER");
 
+        }
+        return false;
+    }
+
+    void makeAIMove() {
+        System.out.println("Player " + player);
+        if (player == 1) {
+            player1.AIMakeMove();
+            gui.updateMove();
+            player = 2;
+        } else {
+            player2.AIMakeMove();
+            gui.updateMove();
+            player = 1;
         }
     }
 
@@ -84,4 +113,5 @@ public class CheckersGame {
     Board getBoard() {
         return board;
     }
+
 }

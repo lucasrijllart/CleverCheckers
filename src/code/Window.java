@@ -19,7 +19,7 @@ import javax.swing.table.*;
 class Window extends JFrame {
 
     private Board board;
-    private CheckersGame game;
+    private static CheckersGame game;
     JTextField infoField;
 
     //player names
@@ -45,7 +45,8 @@ class Window extends JFrame {
     private Color backgroundColor = new Color(191, 192, 190);
 
     //click vars
-    private JTable jt;
+    public JTable jt;
+    private DefaultTableModel dtm;
     private static int numOfClicks = 0;
     private Cell selectedCell;
     private Cell targetCell;
@@ -70,7 +71,7 @@ class Window extends JFrame {
     }
 
     private void createTableView() {
-        DefaultTableModel dtm = new DefaultTableModel(board.getRowCount(), board.getColumnCount()) {
+        dtm = new DefaultTableModel(board.getRowCount(), board.getColumnCount()) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
@@ -129,11 +130,12 @@ class Window extends JFrame {
                     } else {
                         //if not the same cell, try move
                         System.out.println("Tar:" + col + "," + row);
-                        game.gotInput(selectedCell, targetCell); //send input to game
+                        new SendInput(selectedCell, targetCell).start(); //send input to game through thread
+                        jt.repaint(jt.getCellRect(selectedCell.getyPos(), selectedCell.getxPos(), false));
+                        jt.repaint(jt.getCellRect(targetCell.getyPos(), targetCell.getxPos(), false));
                         selectedCell.setSelected(false);
                         selectedCell = null;
                         targetCell = null;
-                        repaint();
                         numOfClicks = 0;
                     }
                 }
@@ -142,6 +144,10 @@ class Window extends JFrame {
         jt.setShowGrid(false);
         jt.setRowHeight(72);
         getContentPane().add(jt, BorderLayout.NORTH);
+    }
+
+    public void updateMove() {
+        jt.repaint();
     }
 
     private void createTextField() {
@@ -527,6 +533,9 @@ class Window extends JFrame {
             Cell cellValue;
             if (v instanceof Cell) {
                 cellValue = (Cell) v;
+
+                //if (cellValue.isFree()) { setText("[" + cellValue.getxPos() + "," + cellValue.getyPos() + "]"); }
+
                 if (cellValue.isLighter()) {
                     setBackground(new Color(234, 235, 200));
                 } else {
@@ -564,6 +573,28 @@ class Window extends JFrame {
                         setIcon(new ImageIcon(img));
                     }
                 }
+            }
+        }
+    }
+
+    class SendInput implements Runnable {
+        Cell selected, target;
+        Thread t;
+
+        SendInput(Cell selected, Cell target) {
+            this.selected = selected;
+            this.target = target;
+        }
+
+        @Override
+        public void run() {
+            game.gotInput(selected, target);
+        }
+
+        void start() {
+            if (t == null) {
+                t = new Thread(this);
+                t.start();
             }
         }
     }
