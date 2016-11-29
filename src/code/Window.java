@@ -141,6 +141,8 @@ class Window extends JFrame {
                 }
             }
         });
+        jt.setRowSelectionAllowed(false);
+        jt.setColumnSelectionAllowed(false);
         jt.setShowGrid(false);
         jt.setRowHeight(72);
         getContentPane().add(jt, BorderLayout.NORTH);
@@ -534,7 +536,12 @@ class Window extends JFrame {
             if (v instanceof Cell) {
                 cellValue = (Cell) v;
 
-                //if (cellValue.isFree()) { setText("[" + cellValue.getxPos() + "," + cellValue.getyPos() + "]"); }
+                if (cellValue.isFree()) {
+                    setText(cellValue.getxPos() + "," + cellValue.getyPos());
+                    setHorizontalAlignment(RIGHT);
+                    setVerticalAlignment(BOTTOM);
+                    setFont(new Font("Helvetica", Font.PLAIN, 9));
+                }
 
                 if (cellValue.isLighter()) {
                     setBackground(new Color(234, 235, 200));

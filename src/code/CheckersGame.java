@@ -24,7 +24,7 @@ public class CheckersGame {
      */
     private CheckersGame() {
         board = new Board(this, 8, 8);
-        newGame("Player", true, 0, "AI", false, 1);
+        newGame("Player", true, 0, "AI", false, 2);
         //create GUI
         gui = new Window(this, board);
     }
@@ -56,6 +56,7 @@ public class CheckersGame {
                 System.out.println("Player " + player);
                 try { //player 1 makes move
                     player1.tryMove(selected, target);
+                    //check if player can make another move
                     gui.infoField.setText("Move made");
                     player = 2;
                     if (!player2.isHuman())
@@ -67,9 +68,10 @@ public class CheckersGame {
                 System.out.println("Player " + player);
                 try {
                     player2.tryMove(selected, target);
+                    //check if player can make another move
                     gui.infoField.setText("Move made");
                     player = 1;
-                    if (!player1.isHuman());
+                    if (!player1.isHuman())
                         makeAIMove();
                 } catch (MoveException me) {
                     gui.infoField.setText(me.getReason());
