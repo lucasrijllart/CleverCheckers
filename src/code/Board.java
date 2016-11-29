@@ -2,7 +2,7 @@ package code;
 
 
 import javax.swing.table.AbstractTableModel;
-
+import java.util.ArrayList;
 
 
 /**
@@ -40,7 +40,7 @@ public class Board extends AbstractTableModel {
         for (int y=0; y<width; y++) { //fill board with cells
             for (int x=0; x<height; x++) {
                 System.out.print("["+x+","+y+"]");
-                board[x][y] = new Cell(x, y);
+                board[x][y] = new Cell(x, y, this);
             }
             System.out.println();
         }
@@ -94,6 +94,21 @@ public class Board extends AbstractTableModel {
             }
         }
         return boardData;
+    }
+
+    ArrayList<Cell> getPieces(int black1white2) {
+        ArrayList<Cell> output = new ArrayList<>();
+        boolean black = black1white2 == 1;
+
+        for (int y=0; y<width; y++) {
+            for (int x = 0; x < height; x++) {
+                Cell c = board[x][y];
+                if (c.isBlack() == black && !c.isFree()) {
+                    output.add(c);
+                }
+            }
+        }
+        return output;
     }
 
     void printBoardData() {

@@ -1,5 +1,9 @@
 package code;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+
 /**
  * Player class, contains information and methods for players.
  * @author Lucas
@@ -116,6 +120,64 @@ public class Player {
         }
 
         throw ex;
+    }
+
+    public void AIMakeMove() {
+        switch (difficulty) {
+            case 1: difficulty1();
+        }
+    }
+
+    private void difficulty1() {
+        System.out.println("Diff 1");
+        ArrayList<int[]> possibleMoves = new ArrayList<>();
+        ArrayList<int[]> possibleTakes = new ArrayList<>();
+        ArrayList<Cell> allPieces;
+
+        //get a list of all pieces owned by player
+        allPieces = board.getPieces(number);
+        System.out.println("Pieces:" + allPieces.size());
+        //for each cell, check if it has possible moves
+        for (Cell c : allPieces) {
+            int[] tryMove = new int[4];
+            tryMove = c.canTakeLeft();
+            if (tryMove != null)
+                possibleTakes.add(tryMove);
+            tryMove = c.canTakeRight();
+            if (tryMove != null)
+                possibleTakes.add(tryMove);
+            tryMove = c.canMoveLeft();
+            if (tryMove != null)
+                possibleMoves.add(tryMove);
+            tryMove = c.canMoveRight();
+            if (tryMove != null)
+                possibleMoves.add(tryMove);
+        }
+        System.out.println("Takes:");
+        for (int[] a : possibleTakes) {
+            System.out.println(Arrays.toString(a));
+        }
+        System.out.println("Moves:");
+        for (int[] a : possibleMoves) {
+            System.out.println(Arrays.toString(a));
+        }
+        int[] nextMove;
+        if (possibleTakes.size() == 1) {
+            nextMove = possibleTakes.get(0);
+        } else if (possibleTakes.size() > 1) {
+            nextMove = possibleMoves.get(new Random().nextInt(possibleMoves.size()));
+        } else {
+            nextMove = possibleMoves.get(new Random().nextInt(possibleMoves.size()));
+        }
+        System.out.println(Arrays.toString(nextMove));
+
+        try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+        try {
+            tryWhiteHuman(board.getValueAt(nextMove[0], nextMove[1]), board.getValueAt(nextMove[2], nextMove[3]));
+        } catch (MoveException e) {
+            System.out.println(e.getReason());
+        }
     }
 
     private boolean minimaxBlack(Cell selection, Cell target) throws MoveException {
