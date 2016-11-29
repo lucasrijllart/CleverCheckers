@@ -32,12 +32,18 @@ public class CheckersGame {
 
     void newGame(String p1Name, boolean p1Human, int p1Diff, String p2Name, boolean p2Human, int p2Diff) {
         board.reset();
-        this.player1 = new Player(1, board, p1Name, p1Human, p1Diff);
-        this.player2 = new Player(2, board, p2Name, p2Human, p2Diff);
+        if (p1Human)
+            this.player1 = new Human(1, board, p1Name);
+        else
+            this.player1 = new AI(1, board, p1Name, p1Diff);
+        if (p2Human)
+            this.player2 = new Human(2, board, p2Name);
+        else
+            this.player2 = new AI(2, board, p2Name, p2Diff);
 
+        //if player1 is AI, make AI move
         if (!player1.isHuman()) {
-            //make AI play
-            player1.AIMakeMove();
+            player1.makeMove();
             player = 2;
         } else {
             player = 1;
@@ -51,10 +57,9 @@ public class CheckersGame {
                 try { //player 1 makes move
                     player1.tryMove(selected, target);
                     gui.infoField.setText("Move made");
-                    //gui.updateMove();
-                    System.out.println("finished updating");
                     player = 2;
-                    makeAIMove();
+                    if (!player2.isHuman())
+                        makeAIMove();
                 } catch (MoveException me) {
                     gui.infoField.setText(me.getReason());
                 }
@@ -63,13 +68,9 @@ public class CheckersGame {
                 try {
                     player2.tryMove(selected, target);
                     gui.infoField.setText("Move made");
-                    if (!player1.isHuman()) {
-                        System.out.println("Player 1");
-                        player1.AIMakeMove();
-                        player = 2;
-                    } else {
-                        player = 1;
-                    }
+                    player = 1;
+                    if (!player1.isHuman());
+                        makeAIMove();
                 } catch (MoveException me) {
                     gui.infoField.setText(me.getReason());
                 }
@@ -81,14 +82,13 @@ public class CheckersGame {
         return false;
     }
 
-    void makeAIMove() {
-        System.out.println("Player " + player);
+    private void makeAIMove() {
         if (player == 1) {
-            player1.AIMakeMove();
+            player1.makeMove();
             gui.updateMove();
             player = 2;
         } else {
-            player2.AIMakeMove();
+            player2.makeMove();
             gui.updateMove();
             player = 1;
         }
