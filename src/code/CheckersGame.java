@@ -43,7 +43,7 @@ public class CheckersGame {
 
         //if player1 is AI, make AI move
         if (!player1.isHuman()) {
-            player1.makeMove();
+            makeAIMove();
             player = 2;
         } else {
             player = 1;
@@ -88,11 +88,29 @@ public class CheckersGame {
 
     private void makeAIMove() {
         if (player == 1) {
-            player1.makeMove();
+            try {
+                player1.makeMove();
+            } catch (GameException e) {
+                gui.infoField.setText(e.getReason());
+                if (e.getWinner() == 1) {
+                    gui.finish.setText(player1.getName() + " WINS!");
+                } else {
+                    gui.finish.setText(player2.getName() + " WINS!");
+                }
+            }
             gui.updateMove();
             player = 2;
         } else {
-            player2.makeMove();
+            try {
+                player2.makeMove();
+            } catch (GameException e) {
+                gui.infoField.setText(e.getReason());
+                if (e.getWinner() == 1) {
+                    gui.finish.setText(player1.getName() + " WINS!");
+                } else {
+                    gui.finish.setText(player2.getName() + " WINS!");
+                }
+            }
             gui.updateMove();
             player = 1;
         }

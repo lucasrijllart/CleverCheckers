@@ -85,7 +85,7 @@ class AI implements Player {
     }
 
     @Override
-    public void makeMove() {
+    public void makeMove() throws GameException {
         switch (difficulty) {
             case 1: difficulty1(); break;
             case 2: difficulty2(); break;
@@ -98,22 +98,16 @@ class AI implements Player {
     /**
      * Difficulty 1 is random selection of all moves
      */
-    private void difficulty1() {
+    private void difficulty1() throws GameException {
         long startTime = System.currentTimeMillis();
         ArrayList<int[]> possibleMoves = getAvailableMoves(board.getBoard(), number);
         possibleMoves.addAll(getAvailableTakes(board.getBoard(), number));
 
-        //for all takes, check if another is possible
-
-        System.out.println("Moves:");
-        for (int[] a : possibleMoves) {
-            System.out.println(Arrays.toString(a));
-        }
+        //get random move
 
         int[] nextMove;
         if (possibleMoves.size() == 0) {
-            //throw new game exception
-            nextMove = null;
+            throw new GameException(number, "No moves possible");
         } else if (possibleMoves.size() < 2) {
             nextMove = possibleMoves.get(0);
         } else {
@@ -137,23 +131,17 @@ class AI implements Player {
     /**
      * Difficulty 2 is random takes, and if no takes, random move
      */
-    private void difficulty2() {
+    private void difficulty2() throws GameException {
         long startTime = System.currentTimeMillis();
         ArrayList<int[]> possibleMoves = getAvailableMoves(board.getBoard(), number);
         ArrayList<int[]> possibleTakes = getAvailableTakes(board.getBoard(), number);
 
         //for all takes, check if another is possible
 
-        System.out.println("Takes:");
-        for (int[] a : possibleTakes) {
-            System.out.println(Arrays.toString(a));
-        }
-        System.out.println("Moves:");
-        for (int[] a : possibleMoves) {
-            System.out.println(Arrays.toString(a));
-        }
-
         int[] nextMove;
+        if (possibleMoves.size() == 0 && possibleMoves.size() == 0) {
+            throw new GameException(number, "No moves possible");
+        }
         if (possibleTakes.size() == 1) {
             nextMove = possibleTakes.get(0);
         } else if (possibleTakes.size() > 1) {
@@ -178,7 +166,7 @@ class AI implements Player {
     /**
      * Difficulty 3 is minimax with depth of 2
      */
-    private void difficulty3() {
+    private void difficulty3() throws GameException {
         long startTime = System.currentTimeMillis();
         currentBoard = board.getBoardData();
         successorEvaluations = new ArrayList<>();
@@ -194,7 +182,7 @@ class AI implements Player {
         }
 
         if (successorEvaluations.size() == 0) {
-            //throw new GameException LOSS
+            throw new GameException(number, "No moves possible");
         } else {
             int[] selectedMove = successorEvaluations.get(0).move;
             double bestScore = successorEvaluations.get(0).score;
@@ -221,7 +209,7 @@ class AI implements Player {
     /**
      * Difficulty 4 is minimax with depth of 6
      */
-    private void difficulty4() {
+    private void difficulty4() throws GameException {
         long startTime = System.currentTimeMillis();
         currentBoard = board.getBoardData();
         successorEvaluations = new ArrayList<>();
@@ -237,7 +225,7 @@ class AI implements Player {
         }
 
         if (successorEvaluations.size() == 0) {
-            //throw new GameException LOSS
+            throw new GameException(number, "No moves possible");
         } else {
             int[] selectedMove = successorEvaluations.get(0).move;
             double bestScore = successorEvaluations.get(0).score;
@@ -264,7 +252,7 @@ class AI implements Player {
     /**
      * Difficulty 5 is minimax with depth of 12
      */
-    private void difficulty5() {
+    private void difficulty5() throws  GameException {
         long startTime = System.currentTimeMillis();
         currentBoard = board.getBoardData();
         successorEvaluations = new ArrayList<>();
@@ -280,7 +268,7 @@ class AI implements Player {
         }
 
         if (successorEvaluations.size() == 0) {
-            //throw new GameException LOSS
+            throw new GameException(number, "No moves possible");
         } else {
             int[] selectedMove = successorEvaluations.get(0).move;
             double bestScore = successorEvaluations.get(0).score;
@@ -313,7 +301,7 @@ class AI implements Player {
      * @param beta beta pruning
      * @return score
      */
-    private double minimax(int depth, int[][] board, int player, double alpha, double beta) {
+    private double minimax(int depth, int[][] board, int player, double alpha, double beta) throws GameException {
         int[][] newBoard;
         double bestScore;
 
@@ -327,6 +315,7 @@ class AI implements Player {
         availableMoves.addAll(getAvailableMoves(convertIntToBoard(board), player));
 
 
+        //assign bestScore and check for available moves
         if (player == number) {
             bestScore = Integer.MIN_VALUE;
             if (availableMoves.size() == 0) return 0;
@@ -584,18 +573,6 @@ class AI implements Player {
 
     @Override
     public String getDifficulty() {
-        return Integer.toString(difficulty);
-    }
-
-    /**
-     * Class that stores the move and the score, for minimax
-     */
-    class MoveAndScore {
-        int[] move;
-        double score;
-        MoveAndScore(int[] move, double score) {
-            this.move = move;
-            this.score = score;
-        }
+        return "AI Level " + Integer.toString(difficulty);
     }
 }

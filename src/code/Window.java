@@ -72,7 +72,6 @@ class Window extends JFrame {
 
         createMenus();
         createGameView();
-        createTextField();
 
         pack();
         setVisible (true);
@@ -213,7 +212,7 @@ class Window extends JFrame {
         return jt;
     }
 
-    public void updateMove() {
+    void updateMove() {
         jt.repaint();
     }
 
@@ -337,7 +336,10 @@ class Window extends JFrame {
                         player2DifficultySlider.getValue()
                 );
                 newGameFrame.dispose();
-                new Window(game, game.getBoard());
+                getContentPane().remove(0);
+                getContentPane().revalidate();
+                createGameView();
+                getContentPane().repaint();
             }
         });
         launchButtonPanel.add(launchButton);
@@ -494,12 +496,7 @@ class Window extends JFrame {
         player1DifficultySlider.setPaintTicks(true);
         player1DifficultySlider.setSnapToTicks(true);
         player1DifficultySlider.setForeground(textForeground);
-        /*
-        Hashtable player1DifficultyTable = new Hashtable();
-        player1DifficultyTable.put(new Integer(1), new Label("1");
-        player1DifficultyTable.put(new Integer(5), new Label("5");
-        player1DifficultySlider.setLabelTable(player1DifficultyTable);
-        */
+
         player1DifficultySliderPanel.add(player1DifficultySlider);
         player1Panel.add(player1DifficultySliderPanel);  // item 5
 

@@ -19,7 +19,7 @@ public interface Player {
     /**
      * Makes AI come up with move then try it
      */
-    void makeMove();
+    void makeMove() throws GameException;
 
     /**
      *
@@ -38,4 +38,18 @@ public interface Player {
      * @return difficulty
      */
     String getDifficulty();
+
+    /**
+     * Class that stores the move and the score, for minimax
+     */
+    class MoveAndScore {
+        int[] move;
+        double score;
+        MoveAndScore(int[] move, double score) {
+            this.move = move;
+            this.score = score;
+        }
+    }
 }
+
+

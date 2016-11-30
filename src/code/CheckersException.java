@@ -5,10 +5,19 @@ interface CheckersException {
 }
 
 class GameException extends Exception implements CheckersException {
+    private int loser;
     private String reason;
 
-    GameException(String reason) {
+    GameException(int loser, String reason) {
+        this.loser = loser;
         this.reason = reason;
+    }
+
+    public int getWinner() {
+        if (loser == 1)
+            return 2;
+        else
+            return 1;
     }
 
     @Override
