@@ -150,6 +150,10 @@ public class Board extends AbstractTableModel {
         return board;
     }
 
+    void updateTable() {
+        game.updateTable();
+    }
+
     /**
      * How high is the grid, for AbstractTableModel
      * @return rows

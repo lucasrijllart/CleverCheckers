@@ -98,7 +98,7 @@ public class CheckersGame {
                     gui.finish.setText(player2.getName() + " WINS!");
                 }
             }
-            gui.updateMove();
+            updateTable();
             player = 2;
         } else {
             try {
@@ -111,7 +111,7 @@ public class CheckersGame {
                     gui.finish.setText(player2.getName() + " WINS!");
                 }
             }
-            gui.updateMove();
+            updateTable();
             player = 1;
         }
     }
@@ -144,8 +144,8 @@ public class CheckersGame {
         return foundPlayer1Piece;
     }
 
-    Board getBoard() {
-        return board;
+    void updateTable() {
+        gui.updateTable();
     }
 
     Player getPlayer1() {

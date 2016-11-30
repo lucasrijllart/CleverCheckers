@@ -28,6 +28,7 @@ class Window extends JFrame {
     private static CheckersGame game;
     JTextField infoField;
     Label finish;
+    private static boolean cannotPressHint;
 
     //player names
     private TextField player1Name;
@@ -52,14 +53,11 @@ class Window extends JFrame {
     private Color backgroundColor = new Color(191, 192, 190);
 
     //click vars
-    public JTable jt;
+    JTable jt;
     private DefaultTableModel dtm;
     private static int numOfClicks = 0;
     private Cell selectedCell;
     private Cell targetCell;
-
-    //menu vars
-    private boolean hints = true;
 
     Window(CheckersGame g, Board b) {
         super("AI Checkers");
@@ -212,7 +210,7 @@ class Window extends JFrame {
         return jt;
     }
 
-    void updateMove() {
+    void updateTable() {
         jt.repaint();
     }
 
@@ -232,17 +230,18 @@ class Window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Human playerNeedingHint;
-                if (game.player == 1) {
-                    playerNeedingHint = (Human) game.getPlayer1();
-
-                } else { //player 2
-                    playerNeedingHint = (Human) game.getPlayer2();
-                }
-                try {
-                    playerNeedingHint.getHint();
-                    jt.repaint();
-                } catch (GameException e1) {
-                    e1.printStackTrace();
+                if (!cannotPressHint) {
+                    if (game.player == 1) {
+                        playerNeedingHint = (Human) game.getPlayer1();
+                    } else { //player 2
+                        playerNeedingHint = (Human) game.getPlayer2();
+                    }
+                    try {
+                        playerNeedingHint.getHint();
+                        jt.repaint();
+                    } catch (GameException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
         });
@@ -286,22 +285,12 @@ class Window extends JFrame {
             }
         });
 
-        JCheckBoxMenuItem showHints = new JCheckBoxMenuItem("Show hints");
-        showHints.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                hints = !hints;
-            }
-        });
-        showHints.setState(true);
-
         game.add(newGame);
         game.addSeparator();
         game.add(exitGame);
         mb.add(game);
         help.add(showRules);
         help.add(showSimplifiedRules);
-        help.addSeparator();
-        help.add(showHints);
         mb.add(help);
         this.setJMenuBar(mb);
     }
@@ -629,7 +618,7 @@ class Window extends JFrame {
             if (v instanceof Cell) {
                 cellValue = (Cell) v;
 
-                if (cellValue.isFree()) {
+                if (cellValue.isFree() && !cellValue.isHint()) {
                     setText(cellValue.getxPos() + "," + cellValue.getyPos());
                     setHorizontalAlignment(RIGHT);
                     setVerticalAlignment(BOTTOM);
@@ -673,7 +662,11 @@ class Window extends JFrame {
                         setIcon(new ImageIcon(img));
                     }
                 } else if (cellValue.isHint()) {
-                    setText("HINT");
+                    ImageIcon i = new ImageIcon(this.getClass().getResource("/images/hint.png"));
+                    Image img = i.getImage();
+
+                    img = img.getScaledInstance(cellWidth-14, cellHeight-14, Image.SCALE_SMOOTH);
+                    setIcon(new ImageIcon(img));
                 }
             }
         }
@@ -691,9 +684,11 @@ class Window extends JFrame {
         @Override
         public void run() {
             game.gotInput(selected, target);
+            cannotPressHint = false;
         }
 
         void start() {
+            cannotPressHint = true;
             if (t == null) {
                 t = new Thread(this);
                 t.start();

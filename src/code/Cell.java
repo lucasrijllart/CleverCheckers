@@ -47,12 +47,14 @@ public class Cell {
     void setBlack() {
         black = true;
         free = false;
+        hint = false;
         if (!king && getyPos() == 0) king = true;
     }
 
     void setWhite() {
         white = true;
         free = false;
+        hint = false;
         if (!king && getyPos() == 7) king = true;
     }
 
@@ -331,8 +333,8 @@ public class Cell {
 
     void setKing() { king = true; }
 
-    void setHint() {
-        hint = true;
+    void setHint(boolean value) {
+        hint = value;
     }
 
     boolean isHint() {

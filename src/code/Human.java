@@ -13,6 +13,7 @@ public class Human extends PlayerFunctions implements Player {
     private int number;
     private Board board;
     private String name;
+    private Cell hintCell;
 
     //for hints
     private ArrayList<MoveAndScore> successorEvaluations;
@@ -38,8 +39,10 @@ public class Human extends PlayerFunctions implements Player {
         boolean moveKing = false;
         boolean takeKing = false;
 
-        selected.printCellData();
-        target.printCellData();
+        removeHint();
+
+        //selected.printCellData();
+        //target.printCellData();
 
         // check cell is not free
         if (selected.isFree())
@@ -140,7 +143,7 @@ public class Human extends PlayerFunctions implements Player {
         return "Human";
     }
 
-    public void getHint() throws GameException {
+    void getHint() throws GameException {
         int[][] currentBoard = board.getBoardData();
         successorEvaluations = new ArrayList<>();
 
@@ -148,7 +151,7 @@ public class Human extends PlayerFunctions implements Player {
 
         System.out.println("SUCCESSOR");
         int iter = 0;
-        for (AI.MoveAndScore ms : successorEvaluations) {
+        for (MoveAndScore ms : successorEvaluations) {
             System.out.println(iter + ": " + Arrays.toString(ms.move) + " |" + ms.score);
             iter+=1;
         }
@@ -159,11 +162,12 @@ public class Human extends PlayerFunctions implements Player {
             int[] selectedMove = successorEvaluations.get(0).move;
             double bestScore = successorEvaluations.get(0).score;
 
-            for (AI.MoveAndScore ms : successorEvaluations) {
+            for (MoveAndScore ms : successorEvaluations) {
                 if (ms.score > bestScore) selectedMove = ms.move;
             }
 
-            board.getValueAt(selectedMove[2],selectedMove[3]).setHint();
+            hintCell = board.getValueAt(selectedMove[2],selectedMove[3]);
+            hintCell.setHint(true);
         }
     }
 
@@ -260,5 +264,10 @@ public class Human extends PlayerFunctions implements Player {
         return bestScore;
     }
 
-
+    public void removeHint() {
+        if (hintCell != null) {
+            hintCell.setHint(false);
+            board.updateTable();
+        }
+    }
 }
