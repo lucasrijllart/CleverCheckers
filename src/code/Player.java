@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Player interface, contains methods that Human and AI classes need to implement
  *
  * @author Lucas
- * @version 0.1
+ * @version 0.2
  */
 public interface Player {
 
@@ -40,22 +40,10 @@ public interface Player {
      * @return difficulty
      */
     String getDifficulty();
-
-    /**
-     * Class that stores the move and the score, for minimax
-     */
-    class MoveAndScore {
-        int[] move;
-        double score;
-        MoveAndScore(int[] move, double score) {
-            this.move = move;
-            this.score = score;
-        }
-    }
 }
 
 /**
- *
+ * Player functions, methods used by minimax and AIs
  */
 class PlayerFunctions {
 
@@ -244,3 +232,14 @@ class PlayerFunctions {
     }
 }
 
+/**
+ * Class that stores the move and the score, for minimax
+ */
+class MoveAndScore {
+    int[] move;
+    double score;
+    MoveAndScore(int[] move, double score) {
+        this.move = move;
+        this.score = score;
+    }
+}
