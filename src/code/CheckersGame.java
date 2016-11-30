@@ -24,7 +24,7 @@ public class CheckersGame {
      */
     private CheckersGame() {
         board = new Board(this, 8, 8);
-        newGame("Player", true, 3, "AI", true, 5);
+        newGame("You", true, 3, "AI", false, 3);
         //create GUI
         gui = new Window(this, board);
     }
