@@ -140,11 +140,9 @@ public class Human extends PlayerFunctions implements Player {
         return "Human";
     }
 
-    private void getHint() throws GameException {
-        long startTime = System.currentTimeMillis();
+    public void getHint() throws GameException {
         int[][] currentBoard = board.getBoardData();
         successorEvaluations = new ArrayList<>();
-        int maxDepth = 13;
 
         minimax(1, currentBoard, number, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
@@ -156,7 +154,7 @@ public class Human extends PlayerFunctions implements Player {
         }
 
         if (successorEvaluations.size() == 0) {
-            //throw new GameException LOSS
+            throw new GameException(number, "No possible moves");
         } else {
             int[] selectedMove = successorEvaluations.get(0).move;
             double bestScore = successorEvaluations.get(0).score;
@@ -164,19 +162,8 @@ public class Human extends PlayerFunctions implements Player {
             for (AI.MoveAndScore ms : successorEvaluations) {
                 if (ms.score > bestScore) selectedMove = ms.move;
             }
-            System.out.println("AI:" + Arrays.toString(selectedMove));
 
-            long stopTime = System.currentTimeMillis();
-            if (stopTime-startTime < idealTime) {
-                try { Thread.sleep(idealTime - (stopTime-startTime)); } catch (InterruptedException e) { e.printStackTrace(); }
-                System.out.println("Had to wait");
-            }
-
-            try {
-                tryMove(board.getValueAt(selectedMove[0],selectedMove[1]), board.getValueAt(selectedMove[2],selectedMove[3]));
-            } catch (MoveException e) {
-                e.printStackTrace();
-            }
+            board.getValueAt(selectedMove[2],selectedMove[3]).setHint();
         }
     }
 

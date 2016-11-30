@@ -23,6 +23,7 @@ public class Cell {
 
     private boolean selected;
     private boolean king;
+    private boolean hint;
 
     Cell(int xPos, int yPos, Cell[][] board) {
         this.xPos = xPos;
@@ -37,6 +38,7 @@ public class Cell {
         free = true;
         selected = false;
         king = false;
+        hint = false;
     }
 
     int getxPos() { return xPos; }
@@ -67,6 +69,7 @@ public class Cell {
     void setFree() {
         white = false;
         black = false;
+        hint = false;
         free = true;
     }
 
@@ -326,5 +329,13 @@ public class Cell {
 
     boolean isKing() { return king; }
 
-    public void setKing() { king = true; }
+    void setKing() { king = true; }
+
+    void setHint() {
+        hint = true;
+    }
+
+    boolean isHint() {
+        return hint;
+    }
 }

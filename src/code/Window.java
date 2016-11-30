@@ -231,13 +231,24 @@ class Window extends JFrame {
         showHintButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Human playerNeedingHint;
                 if (game.player == 1) {
+                    playerNeedingHint = (Human) game.getPlayer1();
 
                 } else { //player 2
-
+                    playerNeedingHint = (Human) game.getPlayer2();
+                }
+                try {
+                    playerNeedingHint.getHint();
+                    jt.repaint();
+                } catch (GameException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
+        Panel buttonPanel = new Panel();
+        buttonPanel.add(showHintButton);
+        p.add(buttonPanel, BorderLayout.CENTER);
         return p;
     }
 
@@ -661,6 +672,8 @@ class Window extends JFrame {
                         img = img.getScaledInstance(cellWidth-4, cellHeight-4, Image.SCALE_SMOOTH);
                         setIcon(new ImageIcon(img));
                     }
+                } else if (cellValue.isHint()) {
+                    setText("HINT");
                 }
             }
         }
