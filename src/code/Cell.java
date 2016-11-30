@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  *
  * @author Lucas Rijllart
- * @version 0.1
+ * @version 0.2
  */
 
 public class Cell {
@@ -13,7 +13,7 @@ public class Cell {
     private int xPos;
     private int yPos;
 
-    private Board board;
+    private Cell[][] board;
 
     private boolean lighter;
 
@@ -24,7 +24,7 @@ public class Cell {
     private boolean selected;
     private boolean king;
 
-    Cell(int xPos, int yPos, Board board) {
+    Cell(int xPos, int yPos, Cell[][] board) {
         this.xPos = xPos;
         this.yPos = yPos;
 
@@ -62,8 +62,6 @@ public class Cell {
             setWhite();
         }
         c.setFree();
-        c.printCellData();
-        printCellData();
     }
 
     void setFree() {
@@ -81,29 +79,36 @@ public class Cell {
         System.out.println("Cell"+"["+xPos+","+yPos+"],"+state);
     }
 
+    String getCellData() {
+        String output;
+        String state;
+        if (black) state = "black";
+        else state = "white";
+        if (free) state = "free";
+        if (king) state += ", king";
+        output = "Cell" + "["+xPos+","+yPos+"],"+state;
+        return output;
+    }
+
     int[] canMoveLeft() {
         int[] output = new int[4];
         if (black) { // black left is x-1, y-1
             if (xPos > 0 && yPos > 0) { //don't consider pieces stuck to left wall
-                if (board.getValueAt(xPos - 1, yPos - 1).isFree()) {
+                if (board[xPos - 1][yPos - 1].isFree()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos - 1;
                     output[3] = yPos - 1;
-                    System.out.println("Cell:" + xPos + "," + yPos);
-                    System.out.println("Move:" + Arrays.toString(output));
                     return output;
                 }
             }
-        } else { // white left is x+1, y+1
+        } else { // white left is x+1] y+1
             if (xPos < 7 && yPos < 7) { //don't consider pieces stuck to right wall
-                if (board.getValueAt(xPos + 1, yPos + 1).isFree()) {
+                if (board[xPos + 1][yPos + 1].isFree()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos + 1;
                     output[3] = yPos + 1;
-                    System.out.println("Cell:" + xPos + "," + yPos);
-                    System.out.println("Move:" + Arrays.toString(output));
                     return output;
                 }
             }
@@ -115,7 +120,7 @@ public class Cell {
         int[] output = new int[4];
         if (black) { // black right is x+1
             if (xPos < 7 && yPos > 0) { //don't consider pieces stuck to left wall
-                if (board.getValueAt(xPos + 1, yPos - 1).isFree()) {
+                if (board[xPos + 1][yPos - 1].isFree()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos + 1;
@@ -125,7 +130,7 @@ public class Cell {
             }
         } else { // white right is x-1
             if (xPos > 0 && yPos < 7) { //don't consider pieces stuck to right wall
-                if (board.getValueAt(xPos - 1, yPos + 1).isFree()) {
+                if (board[xPos - 1][yPos + 1].isFree()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos - 1;
@@ -141,8 +146,8 @@ public class Cell {
         int[] output = new int[4];
         if (black) {
             if (xPos > 1 && yPos > 1) { //need to be 2 away from left wall
-                if (board.getValueAt(xPos-2,yPos-2).isFree() &&
-                        board.getValueAt(xPos-1, yPos-1).isWhite()) {
+                if (board[xPos-2][yPos-2].isFree() &&
+                        board[xPos-1] [yPos-1].isWhite()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos - 2;
@@ -151,9 +156,9 @@ public class Cell {
                 }
             }
         } else {
-            if (xPos < 6 && yPos < 6) { //need to be 2 away from right wall
-                if (board.getValueAt(xPos+2, yPos+2).isFree() &&
-                        board.getValueAt(xPos+1, yPos+1).isBlack()) {
+            if (xPos < 6 && yPos < 6) { //need to be 2 away from right wall and bottom wall
+                if (board[xPos+2][yPos+2].isFree() &&
+                        board[xPos+1] [yPos+1].isBlack()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos + 2;
@@ -169,8 +174,8 @@ public class Cell {
         int[] output = new int[4];
         if (black) {
             if (xPos < 6 && yPos > 1) { //need to be 2 away from right wall
-                if (board.getValueAt(xPos+2,yPos-2).isFree() &&
-                        board.getValueAt(xPos+1, yPos-1).isWhite()) {
+                if (board[xPos+2][yPos-2].isFree() &&
+                        board[xPos+1][yPos-1].isWhite()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos + 2;
@@ -180,8 +185,8 @@ public class Cell {
             }
         } else {
             if (xPos > 1 && yPos < 6) { //need to be 2 away from left wall
-                if (board.getValueAt(xPos-2, yPos+2).isFree() &&
-                        board.getValueAt(xPos-1, yPos+1).isBlack()) {
+                if (board[xPos-2][yPos+2].isFree() &&
+                        board[xPos-1][yPos+1].isBlack()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos - 2;
@@ -197,24 +202,21 @@ public class Cell {
         int[] output = new int[4];
         if (black) { // black left is x-1
             if (xPos > 0 && yPos < 7) { //don't consider pieces stuck to left wall or bottom wall
-                if (board.getValueAt(xPos - 1, yPos + 1).isFree()) {
+                if (board[xPos - 1][yPos + 1].isFree()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos - 1;
                     output[3] = yPos + 1;
-                    System.out.println("[" + xPos + "," + yPos + "," + (xPos-1) + "," + (yPos+1) + "]");
                     return output;
                 }
             }
         } else { // white left is x+1
             if (xPos < 7 && yPos > 0) { //don't consider pieces stuck to right wall
-                if (board.getValueAt(xPos + 1, yPos - 1).isFree()) {
+                if (board[xPos + 1][yPos - 1].isFree()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos + 1;
                     output[3] = yPos - 1;
-                    System.out.println("Cell:" + xPos + "," + yPos);
-                    System.out.println("Move:" + Arrays.toString(output));
                     return output;
                 }
             }
@@ -226,7 +228,7 @@ public class Cell {
         int[] output = new int[4];
         if (black) { // black right is x+1
             if (xPos < 7 && yPos < 7) { //don't consider pieces stuck to left wall
-                if (board.getValueAt(xPos + 1, yPos + 1).isFree()) {
+                if (board[xPos + 1][yPos + 1].isFree()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos + 1;
@@ -236,7 +238,7 @@ public class Cell {
             }
         } else { // white right is x-1
             if (xPos > 0 && yPos > 0) { //don't consider pieces stuck to right wall
-                if (board.getValueAt(xPos - 1, yPos - 1).isFree()) {
+                if (board[xPos - 1][yPos - 1].isFree()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos - 1;
@@ -252,27 +254,23 @@ public class Cell {
         int[] output = new int[4];
         if (black) {
             if (xPos > 1 && yPos < 6) { //need to be 2 away from left wall and bottom wall
-                if (board.getValueAt(xPos-2,yPos+2).isFree() &&
-                        board.getValueAt(xPos-1, yPos+1).isWhite()) {
+                if (board[xPos-2][yPos+2].isFree() &&
+                        board[xPos-1][yPos+1].isWhite()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos - 2;
                     output[3] = yPos + 2;
-                    System.out.println("Cell:" + xPos + "," + yPos);
-                    System.out.println("Move:" + Arrays.toString(output));
                     return output;
                 }
             }
         } else {
             if (xPos < 6 && yPos > 1) { //white take down left is x+2, y-2
-                if (board.getValueAt(xPos+2, yPos-2).isFree() &&
-                        board.getValueAt(xPos+1, yPos-1).isBlack()) {
+                if (board[xPos+2][yPos-2].isFree() &&
+                        board[xPos+1][yPos-1].isBlack()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos + 2;
                     output[3] = yPos - 2;
-                    System.out.println("Cell:" + xPos + "," + yPos);
-                    System.out.println("Move:" + Arrays.toString(output));
                     return output;
                 }
             }
@@ -284,27 +282,23 @@ public class Cell {
         int[] output = new int[4];
         if (black) {
             if (xPos < 6 && yPos < 6) { //need to be 2 away from right wall
-                if (board.getValueAt(xPos+2,yPos+2).isFree() &&
-                        board.getValueAt(xPos+1, yPos+1).isWhite()) {
+                if (board[xPos+2][yPos+2].isFree() &&
+                        board[xPos+1][yPos+1].isWhite()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos + 2;
                     output[3] = yPos + 2;
-                    System.out.println("Cell:" + xPos + "," + yPos);
-                    System.out.println("Move:" + Arrays.toString(output));
                     return output;
                 }
             }
         } else {
             if (xPos > 1 && yPos > 1) { //need to be 2 away from left wall
-                if (board.getValueAt(xPos-2, yPos-2).isFree() &&
-                        board.getValueAt(xPos-1, yPos-1).isBlack()) {
+                if (board[xPos-2][yPos-2].isFree() &&
+                        board[xPos-1][yPos-1].isBlack()) {
                     output[0] = xPos;
                     output[1] = yPos;
                     output[2] = xPos - 2;
                     output[3] = yPos - 2;
-                    System.out.println("Cell:" + xPos + "," + yPos);
-                    System.out.println("Move:" + Arrays.toString(output));
                     return output;
                 }
             }

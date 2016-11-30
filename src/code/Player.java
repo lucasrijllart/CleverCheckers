@@ -14,7 +14,7 @@ public interface Player {
      * @param target selected cell to move piece to
      * @throws MoveException piece movement exception for invalid moves
      */
-    void tryMove(Cell selected, Cell target) throws MoveException;
+    String tryMove(Cell selected, Cell target) throws MoveException;
 
     /**
      * Makes AI come up with move then try it

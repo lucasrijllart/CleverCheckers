@@ -19,7 +19,7 @@ public class Human implements Player {
     }
 
     @Override
-    public void tryMove(Cell selected, Cell target) throws MoveException {
+    public String tryMove(Cell selected, Cell target) throws MoveException {
         //boolean if move has been done
         boolean move = false;
         boolean take = false;
@@ -104,7 +104,11 @@ public class Human implements Player {
         if (!move && !take) {
             throw new MoveException("No valid move or take");
         }
+
+        return name + " moved";
     }
+
+
 
     @Override
     public void makeMove() {
