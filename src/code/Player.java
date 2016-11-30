@@ -32,4 +32,10 @@ public interface Player {
      * @return name
      */
     String getName();
+
+    /**
+     *
+     * @return difficulty
+     */
+    String getDifficulty();
 }

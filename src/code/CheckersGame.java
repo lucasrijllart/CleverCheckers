@@ -78,8 +78,10 @@ public class CheckersGame {
                 }
             }
         } else {
-            gui.infoField.setText("WINNER");
-
+            if (player2Lost())
+                gui.finish.setText(player1.getName() + " WINS!");
+            else
+                gui.finish.setText(player2.getName() + " WINS!");
         }
         return false;
     }
@@ -112,8 +114,27 @@ public class CheckersGame {
         return false;
     }
 
+    private boolean player2Lost() {
+        boolean foundPlayer1Piece = false;
+        int[][] boardData = board.getBoardData();
+        for (int y = 0; y < board.getRowCount(); y++) {
+            for (int x = 0; x < board.getColumnCount(); x++) {
+                if (boardData[x][y] == 1)
+                    foundPlayer1Piece = true;
+            }
+        }
+        return foundPlayer1Piece;
+    }
+
     Board getBoard() {
         return board;
     }
 
+    Player getPlayer1() {
+        return player1;
+    }
+
+    Player getPlayer2() {
+        return player2;
+    }
 }

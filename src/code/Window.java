@@ -16,11 +16,18 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.table.*;
 
+/**
+ * Class responsible for all GUI
+ *
+ * @author Lucas
+ * @version 0.2
+ */
 class Window extends JFrame {
 
     private Board board;
     private static CheckersGame game;
     JTextField infoField;
+    Label finish;
 
     //player names
     private TextField player1Name;
@@ -59,18 +66,76 @@ class Window extends JFrame {
         game = g;
         board = b;
 
+        setResizable(false);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         createMenus();
-        createTableView();
+        createGameView();
         createTextField();
 
         pack();
         setVisible (true);
     }
 
-    private void createTableView() {
+    private void createGameView() {
+        Panel gameView = new Panel();
+        gameView.setLayout(new BorderLayout());
+
+        gameView.add(createTableView(), BorderLayout.WEST);
+
+        Panel controlsView = new Panel();
+        controlsView.setLayout(new GridLayout(2,1));
+        controlsView.setBackground(backgroundColor);
+
+        controlsView.add(getNameView());
+
+        controlsView.add(createTextField());
+
+        gameView.add(controlsView);
+
+        getContentPane().add(gameView, BorderLayout.EAST);
+    }
+
+    private Panel getNameView() {
+        Panel nameView = new Panel();
+        nameView.setLayout(new GridLayout(5,1));
+        nameView.setBackground(backgroundColor);
+
+        Label p2NameLabel = new Label(game.getPlayer2().getName());
+        p2NameLabel.setForeground(textForeground);
+        p2NameLabel.setAlignment(Label.CENTER);
+        p2NameLabel.setFont(helv20);
+        nameView.add(p2NameLabel);
+
+        Label p2DifficultyLabel = new Label(game.getPlayer2().getDifficulty());
+        p2DifficultyLabel.setForeground(textForeground);
+        p2DifficultyLabel.setAlignment(Label.CENTER);
+        p2DifficultyLabel.setFont(helv14);
+        nameView.add(p2DifficultyLabel);
+
+        Label vsLabel = new Label("vs");
+        vsLabel.setForeground(textForeground);
+        vsLabel.setAlignment(Label.CENTER);
+        vsLabel.setFont(helv14);
+        nameView.add(vsLabel);
+
+        Label p1NameLabel = new Label(game.getPlayer1().getName());
+        p1NameLabel.setForeground(textForeground);
+        p1NameLabel.setAlignment(Label.CENTER);
+        p1NameLabel.setFont(helv20);
+        nameView.add(p1NameLabel);
+
+        Label p1DifficultyLabel = new Label(game.getPlayer1().getDifficulty());
+        p1DifficultyLabel.setForeground(textForeground);
+        p1DifficultyLabel.setAlignment(Label.CENTER);
+        p1DifficultyLabel.setFont(helv14);
+        nameView.add(p1DifficultyLabel);
+
+        return nameView;
+    }
+
+    private JTable createTableView() {
         dtm = new DefaultTableModel(board.getRowCount(), board.getColumnCount()) {
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -145,16 +210,36 @@ class Window extends JFrame {
         jt.setColumnSelectionAllowed(false);
         jt.setShowGrid(false);
         jt.setRowHeight(72);
-        getContentPane().add(jt, BorderLayout.NORTH);
+        return jt;
     }
 
     public void updateMove() {
         jt.repaint();
     }
 
-    private void createTextField() {
+    private Panel createTextField() {
+        Panel p = new Panel();
+        p.setLayout(new BorderLayout());
         infoField = new JTextField("Ready to start");
-        getContentPane().add(infoField, BorderLayout.SOUTH);
+        p.add(infoField, BorderLayout.SOUTH);
+        finish = new Label();
+        finish.setForeground(textForeground);
+        finish.setFont(new Font("Helvetica", Font.BOLD, 34));
+        finish.setAlignment(Label.CENTER);
+        p.add(finish, BorderLayout.NORTH);
+
+        Button showHintButton = new Button("Show hint");
+        showHintButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (game.player == 1) {
+
+                } else { //player 2
+
+                }
+            }
+        });
+        return p;
     }
 
     private void createMenus() {

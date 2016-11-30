@@ -582,6 +582,11 @@ class AI implements Player {
         return name;
     }
 
+    @Override
+    public String getDifficulty() {
+        return Integer.toString(difficulty);
+    }
+
     /**
      * Class that stores the move and the score, for minimax
      */

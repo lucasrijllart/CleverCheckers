@@ -124,4 +124,9 @@ public class Human implements Player {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String getDifficulty() {
+        return "Human";
+    }
 }
