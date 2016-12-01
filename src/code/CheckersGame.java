@@ -90,6 +90,7 @@ public class CheckersGame {
             if (player == 1) {
                 try {
                     player1.makeMove();
+                    gui.infoField.setText(player1.getName() + " made move");
                 } catch (GameException e) {
                     gui.infoField.setText(e.getReason());
                     if (e.getWinner() == 1) {
@@ -104,6 +105,7 @@ public class CheckersGame {
             } else {
                 try {
                     player2.makeMove();
+                    gui.infoField.setText(player2.getName() + " made move");
                 } catch (GameException e) {
                     gui.infoField.setText(e.getReason());
                     if (e.getWinner() == 1) {

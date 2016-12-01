@@ -225,7 +225,7 @@ class AI extends PlayerFunctions implements Player {
         long startTime = System.currentTimeMillis();
         currentBoard = board.getBoardData();
         successorEvaluations = new ArrayList<>();
-        maxDepth = 3;
+        maxDepth = 2;
 
         minimax(1, currentBoard, number, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
@@ -262,13 +262,13 @@ class AI extends PlayerFunctions implements Player {
     }
 
     /**
-     * Difficulty 4 is minimax with depth of 6
+     * Difficulty 4 is minimax with depth of 5
      */
     private void difficulty4() throws GameException {
         long startTime = System.currentTimeMillis();
         currentBoard = board.getBoardData();
         successorEvaluations = new ArrayList<>();
-        maxDepth = 7;
+        maxDepth = 5;
 
         minimax(1, currentBoard, number, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
@@ -305,13 +305,13 @@ class AI extends PlayerFunctions implements Player {
     }
 
     /**
-     * Difficulty 5 is minimax with depth of 12
+     * Difficulty 5 is minimax with depth of 10
      */
     private void difficulty5() throws  GameException {
         long startTime = System.currentTimeMillis();
         currentBoard = board.getBoardData();
         successorEvaluations = new ArrayList<>();
-        maxDepth = 8;
+        maxDepth = 10;
 
         minimax(1, currentBoard, number, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
