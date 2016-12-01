@@ -11,6 +11,7 @@ public class CheckersGame {
     private Window gui;
 
     int player;
+    boolean firstMoveIsAI;
 
     private Player player1;
     private Player player2;
@@ -42,13 +43,8 @@ public class CheckersGame {
         else
             this.player2 = new AI(2, board, p2Name, p2Diff);
 
-        //if player1 is AI, make AI move
-        if (!player1.isHuman()) {
-            makeAIMove();
-            player = 2;
-        } else {
-            player = 1;
-        }
+        player = 1;
+        firstMoveIsAI = !p1Human;
     }
 
     boolean gotInput(Cell selected, Cell target) {
@@ -82,42 +78,49 @@ public class CheckersGame {
             }
         } else {
             if (player2Lost())
-                gui.finish.setText(player1.getName() + " WINS!");
+                gui.infoField.setText(player1.getName() + " WINS!");
             else
-                gui.finish.setText(player2.getName() + " WINS!");
+                gui.infoField.setText(player2.getName() + " WINS!");
         }
         return false;
     }
 
-    private void makeAIMove() {
-        if (player == 1) {
-            try {
-                player1.makeMove();
-            } catch (GameException e) {
-                gui.infoField.setText(e.getReason());
-                if (e.getWinner() == 1) {
-                    gui.finish.setText(player1.getName() + " WINS!");
-                } else {
-                    gui.finish.setText(player2.getName() + " WINS!");
+    void makeAIMove() {
+        if (isGameRunning()) {
+            if (player == 1) {
+                try {
+                    player1.makeMove();
+                } catch (GameException e) {
+                    gui.infoField.setText(e.getReason());
+                    if (e.getWinner() == 1) {
+                        gui.finish.setText(player1.getName() + " WINS!");
+                    } else {
+                        gui.finish.setText(player2.getName() + " WINS!");
+                    }
                 }
+                updateTable();
+                player = 2;
+                gui.playerTurn.setText("Turn: " + player2.getName());
+            } else {
+                try {
+                    player2.makeMove();
+                } catch (GameException e) {
+                    gui.infoField.setText(e.getReason());
+                    if (e.getWinner() == 1) {
+                        gui.finish.setText(player1.getName() + " WINS!");
+                    } else {
+                        gui.finish.setText(player2.getName() + " WINS!");
+                    }
+                }
+                updateTable();
+                player = 1;
+                gui.playerTurn.setText("Turn: " + player1.getName());
             }
-            updateTable();
-            player = 2;
-            gui.playerTurn.setText("Turn: " + player2.getName());
         } else {
-            try {
-                player2.makeMove();
-            } catch (GameException e) {
-                gui.infoField.setText(e.getReason());
-                if (e.getWinner() == 1) {
-                    gui.finish.setText(player1.getName() + " WINS!");
-                } else {
-                    gui.finish.setText(player2.getName() + " WINS!");
-                }
-            }
-            updateTable();
-            player = 1;
-            gui.playerTurn.setText("Turn: " + player1.getName());
+            if (player2Lost())
+                gui.finish.setText(player1.getName() + " WINS!");
+            else
+                gui.finish.setText(player2.getName() + " WINS!");
         }
     }
 

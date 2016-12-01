@@ -207,6 +207,11 @@ class Window extends JFrame {
 
     void updateTable() {
         jt.repaint();
+        if (game.player == 1) {
+            if (!game.getPlayer1().isHuman()) new SendInput().start();
+        } else {
+            if (!game.getPlayer2().isHuman()) new SendInput().start();
+        }
     }
 
     private Panel createTextField() {
@@ -348,6 +353,9 @@ class Window extends JFrame {
                 getContentPane().revalidate();
                 createGameView();
                 getContentPane().repaint();
+                if (game.firstMoveIsAI) {
+                    game.makeAIMove();
+                }
             }
         });
         launchButtonPanel.add(launchButton);
@@ -689,10 +697,25 @@ class Window extends JFrame {
             this.target = target;
         }
 
+        SendInput() {}
+
         @Override
         public void run() {
-            game.gotInput(selected, target);
-            cannotPressHint = false;
+            if (game.player == 1) {
+                if (game.getPlayer1().isHuman() ) {
+                    if (selected != null) game.gotInput(selected, target);
+                    cannotPressHint = false;
+                } else {
+                    game.makeAIMove();
+                }
+            } else {
+                if (game.getPlayer2().isHuman()) {
+                    if (selected != null) game.gotInput(selected, target);
+                    cannotPressHint = false;
+                } else {
+                    game.makeAIMove();
+                }
+            }
         }
 
         void start() {

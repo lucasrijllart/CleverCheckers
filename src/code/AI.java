@@ -38,6 +38,61 @@ class AI extends PlayerFunctions implements Player {
 
     @Override
     public String tryMove(Cell selected, Cell target) throws MoveException {
+        if (number == 1) {
+            return moveBlack(selected, target);
+        } else {
+            return moveWhite(selected, target);
+        }
+    }
+
+    private String moveBlack(Cell selected, Cell target) {
+        //check for move
+        if (target.getxPos() == selected.getxPos()+1 || target.getxPos() == selected.getxPos()-1) {
+            if (target.getyPos() == selected.getyPos()-1) {
+                target.move(selected);
+            }
+        }
+
+        //check for take
+        if (target.getxPos() == selected.getxPos()+2 || target.getxPos() == selected.getxPos()-2) {
+            if (target.getyPos() == selected.getyPos()-2) {
+                Cell takeTarget;
+                if (target.getxPos() - selected.getxPos() > 0) // get right piece
+                    takeTarget = board.getValueAt(selected.getxPos()+1, selected.getyPos()-1);
+                else // get left piece
+                    takeTarget = board.getValueAt(selected.getxPos()-1, selected.getyPos()-1);
+                // check that piece is black
+                target.move(selected);
+                takeTarget.setFree();
+            }
+        }
+
+        //check for move and take if king
+        if (selected.isKing()) {
+            //check for move in opposite direction
+            if (target.getxPos() == selected.getxPos()+1 || target.getxPos() == selected.getxPos()-1) {
+                if (target.getyPos() == selected.getyPos()+1) {
+                    target.move(selected);
+                }
+            }
+            //check for take in opposite direction
+            if (target.getxPos() == selected.getxPos()+2 || target.getxPos() == selected.getxPos()-2) {
+                if (target.getyPos() == selected.getyPos() + 2) {
+                    Cell takeTarget;
+                    if (target.getxPos() - selected.getxPos() > 0) // get right piece
+                        takeTarget = board.getValueAt(selected.getxPos() + 1, selected.getyPos() + 1);
+                    else // get left piece
+                        takeTarget = board.getValueAt(selected.getxPos() - 1, selected.getyPos() + 1);
+                    // check that piece is black
+                    target.move(selected);
+                    takeTarget.setFree();
+                }
+            }
+        }
+        return name + " moved";
+    }
+
+    private String moveWhite(Cell selected, Cell target) {
         //check for move
         if (target.getxPos() == selected.getxPos()+1 || target.getxPos() == selected.getxPos()-1) {
             if (target.getyPos() == selected.getyPos()+1) {
@@ -256,7 +311,7 @@ class AI extends PlayerFunctions implements Player {
         long startTime = System.currentTimeMillis();
         currentBoard = board.getBoardData();
         successorEvaluations = new ArrayList<>();
-        maxDepth = 13;
+        maxDepth = 8;
 
         minimax(1, currentBoard, number, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
