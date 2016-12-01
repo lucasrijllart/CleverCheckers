@@ -1,5 +1,4 @@
 package code;
-// ColoredCells.java
 
 import java.awt.*;
 import java.awt.event.*;
