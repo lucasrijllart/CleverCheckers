@@ -54,8 +54,7 @@ class Window extends JFrame {
     private Color backgroundColor = new Color(191, 192, 190);
 
     //click vars
-    JTable jt;
-    private DefaultTableModel dtm;
+    private JTable jt;
     private static int numOfClicks = 0;
     private Cell selectedCell;
     private Cell targetCell;
@@ -135,7 +134,7 @@ class Window extends JFrame {
     }
 
     private JTable createTableView() {
-        dtm = new DefaultTableModel(board.getRowCount(), board.getColumnCount()) {
+        DefaultTableModel dtm = new DefaultTableModel(board.getRowCount(), board.getColumnCount()) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
@@ -186,7 +185,7 @@ class Window extends JFrame {
                         numOfClicks = 1;
                     } else {
                         //if not the same cell, try move
-                        System.out.println("Tar:" + col + "," + row);
+                        //System.out.println("Tar:" + col + "," + row);
                         new SendInput(selectedCell, targetCell).start(); //send input to game through thread
                         jt.repaint(jt.getCellRect(selectedCell.getyPos(), selectedCell.getxPos(), false));
                         jt.repaint(jt.getCellRect(targetCell.getyPos(), targetCell.getxPos(), false));

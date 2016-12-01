@@ -267,13 +267,6 @@ public class Human extends PlayerFunctions implements Player {
 
         minimax(1, currentBoard, number, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
-        System.out.println("SUCCESSOR");
-        int iter = 0;
-        for (MoveAndScore ms : successorEvaluations) {
-            System.out.println(iter + ": " + Arrays.toString(ms.move) + " |" + ms.score);
-            iter+=1;
-        }
-
         if (successorEvaluations.size() == 0) {
             throw new GameException(number, "No possible moves");
         } else {
@@ -333,10 +326,9 @@ public class Human extends PlayerFunctions implements Player {
         if (player == number) {
 
             //for every AI move
-            for (int child = 0; child < availableMoves.size(); child++) {
+            for (int[] move : availableMoves) {
 
                 //get move
-                int[] move = availableMoves.get(child);
                 String spaces = new String(new char[depth]).replace("\0", " ");
                 //System.out.println("AI:" + spaces + Arrays.toString(move) + " |" + depth);
 
@@ -346,7 +338,7 @@ public class Human extends PlayerFunctions implements Player {
                 //printBoardData(newBoard);
                 double score = (double) boardAndScore[1];
                 //get minimax eval for previous move
-                score += minimax(depth+1, newBoard, opponentNum, alpha, beta);
+                score += minimax(depth + 1, newBoard, opponentNum, alpha, beta);
                 //System.out.println(" |" + score);
                 bestScore = Math.max(bestScore, score);
                 alpha = Math.max(score, alpha);
@@ -360,9 +352,8 @@ public class Human extends PlayerFunctions implements Player {
         //if player == 1 == Human == MIN
         else {
             //for every human move
-            for (int child = 0; child < availableMoves.size(); child++) {
+            for (int[] move : availableMoves) {
                 //get move
-                int[] move = availableMoves.get(child);
                 String spaces = new String(new char[depth]).replace("\0", " ");
                 //System.out.println("Hu:" + spaces + Arrays.toString(move) + " |" + depth);
 
@@ -373,7 +364,7 @@ public class Human extends PlayerFunctions implements Player {
                 //printBoardData(newBoard);
 
                 //get minimax eval for previous move
-                score += minimax(depth+1, newBoard, number, alpha, beta);
+                score += minimax(depth + 1, newBoard, number, alpha, beta);
                 bestScore = Math.min(bestScore, score);
                 beta = Math.min(score, bestScore);
                 if (alpha >= beta) break;
@@ -382,7 +373,7 @@ public class Human extends PlayerFunctions implements Player {
         return bestScore;
     }
 
-    void removeHint() {
+    private void removeHint() {
         hintCell.setHint(false);
         board.updateTable();
 

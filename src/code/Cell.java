@@ -75,15 +75,6 @@ class Cell {
         free = true;
     }
 
-    void printCellData() {
-        String state;
-        if (black) state = "black";
-        else state = "white";
-        if (free) state = "free";
-        if (king) state += ", king";
-        System.out.println("Cell"+"["+xPos+","+yPos+"],"+state);
-    }
-
     String getCellData() {
         String output;
         String state;

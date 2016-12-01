@@ -185,7 +185,7 @@ class PlayerFunctions {
      * @param black1white2 player number
      * @return ArrayList<Cell> of all pieces of the player
      */
-     ArrayList<Cell> getPieces(Cell[][] board, int black1white2) {
+     private ArrayList<Cell> getPieces(Cell[][] board, int black1white2) {
         ArrayList<Cell> output = new ArrayList<>();
         boolean black = black1white2 == 1;
         for (int y=0; y<8; y++) {
@@ -214,20 +214,6 @@ class PlayerFunctions {
             }
         }
         return output;
-    }
-
-    void printBoardData(int[][] boardData) {
-        int rowNum = 0;
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                System.out.print(boardData[x][y] + " ");
-            }
-            System.out.print("| " + rowNum);
-            rowNum += 1;
-            System.out.println();
-        }
-        System.out.println("----------------");
-        System.out.println("0 1 2 3 4 5 6 7");
     }
 }
 

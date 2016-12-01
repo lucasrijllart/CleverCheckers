@@ -168,7 +168,7 @@ class AI extends PlayerFunctions implements Player {
         } else {
             nextMove = possibleMoves.get(new Random().nextInt(possibleMoves.size()));
         }
-        System.out.println("AI Move:" + Arrays.toString(nextMove));
+        //System.out.println("AI Move:" + Arrays.toString(nextMove));
 
         long stopTime = System.currentTimeMillis();
         if (stopTime-startTime < idealTime) {
@@ -178,7 +178,7 @@ class AI extends PlayerFunctions implements Player {
         try {
             tryMove(board.getValueAt(nextMove[0], nextMove[1]), board.getValueAt(nextMove[2], nextMove[3]));
         } catch (MoveException e) {
-            System.out.println(e.getReason());
+            //System.out.println(e.getReason());
         }
 
     }
@@ -204,7 +204,7 @@ class AI extends PlayerFunctions implements Player {
         } else {
             nextMove = possibleMoves.get(new Random().nextInt(possibleMoves.size()));
         }
-        System.out.println("AI Move:" + Arrays.toString(nextMove));
+        //System.out.println("AI Move:" + Arrays.toString(nextMove));
 
         long stopTime = System.currentTimeMillis();
         if (stopTime-startTime < idealTime) {
@@ -214,7 +214,7 @@ class AI extends PlayerFunctions implements Player {
         try {
             tryMove(board.getValueAt(nextMove[0], nextMove[1]), board.getValueAt(nextMove[2], nextMove[3]));
         } catch (MoveException e) {
-            System.out.println(e.getReason());
+            //System.out.println(e.getReason());
         }
     }
 
@@ -232,7 +232,7 @@ class AI extends PlayerFunctions implements Player {
         //System.out.println("SUCCESSOR");
         int iter = 0;
         for (MoveAndScore ms : successorEvaluations) {
-            System.out.println(iter + ": " + Arrays.toString(ms.move) + " |" + ms.score);
+            //System.out.println(iter + ": " + Arrays.toString(ms.move) + " |" + ms.score);
             iter+=1;
         }
 
@@ -250,7 +250,7 @@ class AI extends PlayerFunctions implements Player {
             long stopTime = System.currentTimeMillis();
             if (stopTime-startTime < idealTime) {
                 try { Thread.sleep(idealTime - (stopTime-startTime)); } catch (InterruptedException e) { e.printStackTrace(); }
-                System.out.println("Had to wait");
+                //System.out.println("Had to wait");
             }
 
             try {
@@ -272,10 +272,10 @@ class AI extends PlayerFunctions implements Player {
 
         minimax(1, currentBoard, number, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
-        System.out.println("SUCCESSOR");
+        //System.out.println("SUCCESSOR");
         int iter = 0;
         for (MoveAndScore ms : successorEvaluations) {
-            System.out.println(iter + ": " + Arrays.toString(ms.move) + " |" + ms.score);
+            //System.out.println(iter + ": " + Arrays.toString(ms.move) + " |" + ms.score);
             iter+=1;
         }
 
@@ -288,12 +288,12 @@ class AI extends PlayerFunctions implements Player {
             for (MoveAndScore ms : successorEvaluations) {
                 if (ms.score > bestScore) selectedMove = ms.move;
             }
-            System.out.println("AI:" + Arrays.toString(selectedMove));
+            //System.out.println("AI:" + Arrays.toString(selectedMove));
 
             long stopTime = System.currentTimeMillis();
             if (stopTime-startTime < idealTime) {
                 try { Thread.sleep(idealTime - (stopTime-startTime)); } catch (InterruptedException e) { e.printStackTrace(); }
-                System.out.println("Had to wait");
+                //System.out.println("Had to wait");
             }
 
             try {
@@ -315,10 +315,10 @@ class AI extends PlayerFunctions implements Player {
 
         minimax(1, currentBoard, number, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
-        System.out.println("SUCCESSOR");
+        //System.out.println("SUCCESSOR");
         int iter = 0;
         for (MoveAndScore ms : successorEvaluations) {
-            System.out.println(iter + ": " + Arrays.toString(ms.move) + " |" + ms.score);
+            //System.out.println(iter + ": " + Arrays.toString(ms.move) + " |" + ms.score);
             iter+=1;
         }
 
@@ -331,12 +331,12 @@ class AI extends PlayerFunctions implements Player {
             for (MoveAndScore ms : successorEvaluations) {
                 if (ms.score > bestScore) selectedMove = ms.move;
             }
-            System.out.println("AI:" + Arrays.toString(selectedMove));
+            //System.out.println("AI:" + Arrays.toString(selectedMove));
 
             long stopTime = System.currentTimeMillis();
             if (stopTime-startTime < idealTime) {
                 try { Thread.sleep(idealTime - (stopTime-startTime)); } catch (InterruptedException e) { e.printStackTrace(); }
-                System.out.println("Had to wait");
+                //System.out.println("Had to wait");
             }
 
             try {
@@ -384,10 +384,9 @@ class AI extends PlayerFunctions implements Player {
         if (player == number) {
 
             //for every AI move
-            for (int child = 0; child < availableMoves.size(); child++) {
+            for (int[] move : availableMoves) {
 
                 //get move
-                int[] move = availableMoves.get(child);
                 String spaces = new String(new char[depth]).replace("\0", " ");
                 //System.out.println("AI:" + spaces + Arrays.toString(move) + " |" + depth);
 
@@ -397,7 +396,7 @@ class AI extends PlayerFunctions implements Player {
                 //printBoardData(newBoard);
                 double score = (double) boardAndScore[1];
                 //get minimax eval for previous move
-                score += minimax(depth+1, newBoard, opponentNum, alpha, beta);
+                score += minimax(depth + 1, newBoard, opponentNum, alpha, beta);
                 //System.out.println(" |" + score);
                 bestScore = Math.max(bestScore, score);
                 alpha = Math.max(score, alpha);
@@ -411,9 +410,8 @@ class AI extends PlayerFunctions implements Player {
         //if player == 1 == Human == MIN
         else {
             //for every human move
-            for (int child = 0; child < availableMoves.size(); child++) {
+            for (int[] move : availableMoves) {
                 //get move
-                int[] move = availableMoves.get(child);
                 String spaces = new String(new char[depth]).replace("\0", " ");
                 //System.out.println("Hu:" + spaces + Arrays.toString(move) + " |" + depth);
 
@@ -424,7 +422,7 @@ class AI extends PlayerFunctions implements Player {
                 //printBoardData(newBoard);
 
                 //get minimax eval for previous move
-                score += minimax(depth+1, newBoard, number, alpha, beta);
+                score += minimax(depth + 1, newBoard, number, alpha, beta);
                 bestScore = Math.min(bestScore, score);
                 beta = Math.min(score, bestScore);
                 if (alpha >= beta) break;

@@ -50,11 +50,11 @@ public class CheckersGame {
     boolean gotInput(Cell selected, Cell target) {
         if (isGameRunning()) {
             if (player == 1) {
-                System.out.println("Player " + player);
+                //System.out.println("Player " + player);
                 try { //player 1 makes move
                     player1.tryMove(selected, target);
                     //check if player can make another move
-                    gui.infoField.setText("Move made");
+                    gui.infoField.setText(player1.getName() + " made move");
                     player = 2;
                     gui.playerTurn.setText("Turn: " + player2.getName());
                     if (!player2.isHuman())
@@ -63,11 +63,11 @@ public class CheckersGame {
                     gui.infoField.setText(me.getReason());
                 }
             } else {
-                System.out.println("Player " + player);
+                //System.out.println("Player " + player);
                 try {
                     player2.tryMove(selected, target);
                     //check if player can make another move
-                    gui.infoField.setText("Move made");
+                    gui.infoField.setText(player2.getName() + " made move");
                     player = 1;
                     gui.playerTurn.setText("Turn: " + player1.getName());
                     if (!player1.isHuman())
