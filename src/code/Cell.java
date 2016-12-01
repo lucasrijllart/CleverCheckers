@@ -1,7 +1,8 @@
 package code;
 
 /**
- *
+ * Cell class contians information of one cell from the board.
+ * Keeps track of state of one square and has movement checks.
  * @author Lucas Rijllart
  * @version 0.2
  */

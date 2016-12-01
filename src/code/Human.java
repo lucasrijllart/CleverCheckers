@@ -16,8 +16,6 @@ public class Human extends PlayerFunctions implements Player {
 
     //for hints
     private ArrayList<MoveAndScore> successorEvaluations;
-    private int maxDepth = 7;
-    private long idealTime = 2000;
     private int opponentNum;
 
     Human(int number, Board board, String name) {
@@ -295,6 +293,7 @@ public class Human extends PlayerFunctions implements Player {
         double bestScore;
 
         //if max depth has been reached
+        int maxDepth = 7;
         if (depth > maxDepth) {
             return 0;
         }
