@@ -1,27 +1,35 @@
 package code;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Lucas Rijllart
- * @version 0.1
+ * @version 0.2
  */
 
-public class Cell {
+class Cell {
 
     private int xPos;
     private int yPos;
+
+    private Cell[][] board;
 
     private boolean lighter;
 
     private boolean black;
     private boolean white;
     private boolean free;
+
     private boolean selected;
     private boolean king;
+    private boolean hint;
 
-    Cell(int xPos, int yPos) {
+    Cell(int xPos, int yPos, Cell[][] board) {
         this.xPos = xPos;
         this.yPos = yPos;
+
+        this.board = board;
 
         lighter = false;
 
@@ -30,58 +38,297 @@ public class Cell {
         free = true;
         selected = false;
         king = false;
+        hint = false;
     }
 
-    public int getxPos() { return xPos; }
-    public int getyPos() { return yPos; }
+    int getxPos() { return xPos; }
+    int getyPos() { return yPos; }
 
-    public void setBlack() {
+    void setBlack() {
         black = true;
         free = false;
+        hint = false;
+        if (!king && getyPos() == 0) king = true;
     }
 
-    public void setWhite() {
+    void setWhite() {
         white = true;
         free = false;
+        hint = false;
+        if (!king && getyPos() == 7) king = true;
     }
 
-    public void setFree() {
+    void move(Cell c) {
+        this.king = c.isKing();
+        if (c.isBlack()) {
+            setBlack();
+        } else {
+            setWhite();
+        }
+        c.setFree();
+    }
+
+    void setFree() {
         white = false;
         black = false;
+        hint = false;
         free = true;
     }
 
-    public void printCellData() {
+    String getCellData() {
+        String output;
         String state;
         if (black) state = "black";
         else state = "white";
         if (free) state = "free";
-        System.out.println("Cell"+"["+xPos+","+yPos+"],"+state);
+        if (king) state += ", king";
+        output = "Cell" + "["+xPos+","+yPos+"],"+state;
+        return output;
     }
 
-    public boolean isBlack() {
-        return black;
+    int[] canMoveLeft() {
+        int[] output = new int[4];
+        if (black) { // black left is x-1, y-1
+            if (xPos > 0 && yPos > 0) { //don't consider pieces stuck to left wall
+                if (board[xPos - 1][yPos - 1].isFree()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos - 1;
+                    output[3] = yPos - 1;
+                    return output;
+                }
+            }
+        } else { // white left is x+1] y+1
+            if (xPos < 7 && yPos < 7) { //don't consider pieces stuck to right wall
+                if (board[xPos + 1][yPos + 1].isFree()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos + 1;
+                    output[3] = yPos + 1;
+                    return output;
+                }
+            }
+        }
+        return null;
     }
 
-    public boolean isWhite() {
+    int[] canMoveRight() {
+        int[] output = new int[4];
+        if (black) { // black right is x+1
+            if (xPos < 7 && yPos > 0) { //don't consider pieces stuck to left wall
+                if (board[xPos + 1][yPos - 1].isFree()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos + 1;
+                    output[3] = yPos - 1;
+                    return output;
+                }
+            }
+        } else { // white right is x-1
+            if (xPos > 0 && yPos < 7) { //don't consider pieces stuck to right wall
+                if (board[xPos - 1][yPos + 1].isFree()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos - 1;
+                    output[3] = yPos + 1;
+                    return output;
+                }
+            }
+        }
+        return null;
+    }
+
+    int[] canTakeLeft() {
+        int[] output = new int[4];
+        if (black) {
+            if (xPos > 1 && yPos > 1) { //need to be 2 away from left wall
+                if (board[xPos-2][yPos-2].isFree() &&
+                        board[xPos-1] [yPos-1].isWhite()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos - 2;
+                    output[3] = yPos - 2;
+                    return output;
+                }
+            }
+        } else {
+            if (xPos < 6 && yPos < 6) { //need to be 2 away from right wall and bottom wall
+                if (board[xPos+2][yPos+2].isFree() &&
+                        board[xPos+1] [yPos+1].isBlack()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos + 2;
+                    output[3] = yPos + 2;
+                    return output;
+                }
+            }
+        }
+        return null;
+    }
+
+    int[] canTakeRight() {
+        int[] output = new int[4];
+        if (black) {
+            if (xPos < 6 && yPos > 1) { //need to be 2 away from right wall
+                if (board[xPos+2][yPos-2].isFree() &&
+                        board[xPos+1][yPos-1].isWhite()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos + 2;
+                    output[3] = yPos - 2;
+                    return output;
+                }
+            }
+        } else {
+            if (xPos > 1 && yPos < 6) { //need to be 2 away from left wall
+                if (board[xPos-2][yPos+2].isFree() &&
+                        board[xPos-1][yPos+1].isBlack()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos - 2;
+                    output[3] = yPos + 2;
+                    return output;
+                }
+            }
+        }
+        return null;
+    }
+
+    int[] canKingMoveDownLeft() {
+        int[] output = new int[4];
+        if (black) { // black left is x-1
+            if (xPos > 0 && yPos < 7) { //don't consider pieces stuck to left wall or bottom wall
+                if (board[xPos - 1][yPos + 1].isFree()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos - 1;
+                    output[3] = yPos + 1;
+                    return output;
+                }
+            }
+        } else { // white left is x+1
+            if (xPos < 7 && yPos > 0) { //don't consider pieces stuck to right wall
+                if (board[xPos + 1][yPos - 1].isFree()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos + 1;
+                    output[3] = yPos - 1;
+                    return output;
+                }
+            }
+        }
+        return null;
+    }
+
+    int[] canKingMoveDownRight() {
+        int[] output = new int[4];
+        if (black) { // black right is x+1
+            if (xPos < 7 && yPos < 7) { //don't consider pieces stuck to left wall
+                if (board[xPos + 1][yPos + 1].isFree()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos + 1;
+                    output[3] = yPos + 1;
+                    return output;
+                }
+            }
+        } else { // white right is x-1
+            if (xPos > 0 && yPos > 0) { //don't consider pieces stuck to right wall
+                if (board[xPos - 1][yPos - 1].isFree()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos - 1;
+                    output[3] = yPos - 1;
+                    return output;
+                }
+            }
+        }
+        return null;
+    }
+
+    int[] canKingTakeDownLeft() {
+        int[] output = new int[4];
+        if (black) {
+            if (xPos > 1 && yPos < 6) { //need to be 2 away from left wall and bottom wall
+                if (board[xPos-2][yPos+2].isFree() &&
+                        board[xPos-1][yPos+1].isWhite()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos - 2;
+                    output[3] = yPos + 2;
+                    return output;
+                }
+            }
+        } else {
+            if (xPos < 6 && yPos > 1) { //white take down left is x+2, y-2
+                if (board[xPos+2][yPos-2].isFree() &&
+                        board[xPos+1][yPos-1].isBlack()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos + 2;
+                    output[3] = yPos - 2;
+                    return output;
+                }
+            }
+        }
+        return null;
+    }
+
+    int[] canKingTakeDownRight() {
+        int[] output = new int[4];
+        if (black) {
+            if (xPos < 6 && yPos < 6) { //need to be 2 away from right wall
+                if (board[xPos+2][yPos+2].isFree() &&
+                        board[xPos+1][yPos+1].isWhite()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos + 2;
+                    output[3] = yPos + 2;
+                    return output;
+                }
+            }
+        } else {
+            if (xPos > 1 && yPos > 1) { //need to be 2 away from left wall
+                if (board[xPos-2][yPos-2].isFree() &&
+                        board[xPos-1][yPos-1].isBlack()) {
+                    output[0] = xPos;
+                    output[1] = yPos;
+                    output[2] = xPos - 2;
+                    output[3] = yPos - 2;
+                    return output;
+                }
+            }
+        }
+        return null;
+    }
+
+    boolean isBlack() { return black; }
+
+    boolean isWhite() {
         return white;
     }
 
-    public boolean isFree() {
-        return free;
-    }
+    boolean isFree() { return free; }
 
-    public boolean isLighter() { return lighter; }
+    boolean isLighter() { return lighter; }
 
-    public void setLighter() {
+    void setLighter() {
         lighter = true;
     }
 
-    public boolean isSelected() { return selected; }
+    boolean isSelected() { return selected; }
 
-    public void setSelected(boolean value) { selected = value; }
+    void setSelected(boolean value) { selected = value; }
 
-    public boolean isKing() { return king; }
+    boolean isKing() { return king; }
 
-    public void setKing() { king = true; }
+    void setKing() { king = true; }
+
+    void setHint(boolean value) {
+        hint = value;
+    }
+
+    boolean isHint() {
+        return hint;
+    }
 }

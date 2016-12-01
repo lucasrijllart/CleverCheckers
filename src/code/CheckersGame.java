@@ -10,7 +10,8 @@ public class CheckersGame {
     private Board board;
     private Window gui;
 
-    public int player;
+    int player;
+    boolean firstMoveIsAI;
 
     private Player player1;
     private Player player2;
@@ -22,43 +23,104 @@ public class CheckersGame {
     /**
      * New game with player1=human player2=AI
      */
-    public CheckersGame() {
+    private CheckersGame() {
         board = new Board(this, 8, 8);
-        newGame("Player", true, 0, "AI", true, 3);
+
+        newGame("You", true, 3, "AI", false, 3);
         //create GUI
         gui = new Window(this, board);
     }
 
 
-    public void newGame(String p1Name, boolean p1Human, int p1Diff, String p2Name, boolean p2Human, int p2Diff) {
+    void newGame(String p1Name, boolean p1Human, int p1Diff, String p2Name, boolean p2Human, int p2Diff) {
         board.reset();
-        this.player1 = new Player(1, board, p1Name, p1Human, p1Diff);
-        this.player2 = new Player(2, board, p2Name, p2Human, p2Diff);
+        if (p1Human)
+            this.player1 = new Human(1, board, p1Name);
+        else
+            this.player1 = new AI(1, board, p1Name, p1Diff);
+        if (p2Human)
+            this.player2 = new Human(2, board, p2Name);
+        else
+            this.player2 = new AI(2, board, p2Name, p2Diff);
+
         player = 1;
+        firstMoveIsAI = !p1Human;
     }
 
-    public void gotInput(Cell selected, Cell target) {
+    boolean gotInput(Cell selected, Cell target) {
         if (isGameRunning()) {
             if (player == 1) {
-                System.out.println("Player " + player);
-                try {
+                //System.out.println("Player " + player);
+                try { //player 1 makes move
                     player1.tryMove(selected, target);
-                    gui.infoField.setText("Move made");
+                    //check if player can make another move
+                    gui.infoField.setText(player1.getName() + " made move");
                     player = 2;
+                    gui.playerTurn.setText("Turn: " + player2.getName());
+                    if (!player2.isHuman())
+                        makeAIMove();
                 } catch (MoveException me) {
                     gui.infoField.setText(me.getReason());
                 }
             } else {
-                System.out.println("Player " + player);
-
+                //System.out.println("Player " + player);
                 try {
                     player2.tryMove(selected, target);
-                    gui.infoField.setText("Move made");
+                    //check if player can make another move
+                    gui.infoField.setText(player2.getName() + " made move");
                     player = 1;
+                    gui.playerTurn.setText("Turn: " + player1.getName());
+                    if (!player1.isHuman())
+                        makeAIMove();
                 } catch (MoveException me) {
                     gui.infoField.setText(me.getReason());
                 }
             }
+        } else {
+            if (player2Lost())
+                gui.infoField.setText(player1.getName() + " WINS!");
+            else
+                gui.infoField.setText(player2.getName() + " WINS!");
+        }
+        return false;
+    }
+
+    void makeAIMove() {
+        if (isGameRunning()) {
+            if (player == 1) {
+                try {
+                    player1.makeMove();
+                } catch (GameException e) {
+                    gui.infoField.setText(e.getReason());
+                    if (e.getWinner() == 1) {
+                        gui.finish.setText(player1.getName() + " WINS!");
+                    } else {
+                        gui.finish.setText(player2.getName() + " WINS!");
+                    }
+                }
+                updateTable();
+                player = 2;
+                gui.playerTurn.setText("Turn: " + player2.getName());
+            } else {
+                try {
+                    player2.makeMove();
+                } catch (GameException e) {
+                    gui.infoField.setText(e.getReason());
+                    if (e.getWinner() == 1) {
+                        gui.finish.setText(player1.getName() + " WINS!");
+                    } else {
+                        gui.finish.setText(player2.getName() + " WINS!");
+                    }
+                }
+                updateTable();
+                player = 1;
+                gui.playerTurn.setText("Turn: " + player1.getName());
+            }
+        } else {
+            if (player2Lost())
+                gui.finish.setText(player1.getName() + " WINS!");
+            else
+                gui.finish.setText(player2.getName() + " WINS!");
         }
     }
 
@@ -78,7 +140,27 @@ public class CheckersGame {
         return false;
     }
 
-    public Board getBoard() {
-        return board;
+    private boolean player2Lost() {
+        boolean foundPlayer1Piece = false;
+        int[][] boardData = board.getBoardData();
+        for (int y = 0; y < board.getRowCount(); y++) {
+            for (int x = 0; x < board.getColumnCount(); x++) {
+                if (boardData[x][y] == 1)
+                    foundPlayer1Piece = true;
+            }
+        }
+        return foundPlayer1Piece;
+    }
+
+    void updateTable() {
+        gui.updateTable();
+    }
+
+    Player getPlayer1() {
+        return player1;
+    }
+
+    Player getPlayer2() {
+        return player2;
     }
 }

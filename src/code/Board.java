@@ -1,15 +1,14 @@
 package code;
 
+
 import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+
 
 /**
- *
+ * Board class
  * @author Lucas Rijllart
  * @version 0.1
- */
-
-/**
- * Construct a new Board
  */
 public class Board extends AbstractTableModel {
     private final int		width;
@@ -23,7 +22,7 @@ public class Board extends AbstractTableModel {
      * @param width  Board width
      * @param height  Board height
      */
-    public Board(CheckersGame game, int width, int height) {
+    Board(CheckersGame game, int width, int height) {
         this.game = game;
         this.width = width;
         this.height = height;
@@ -32,7 +31,8 @@ public class Board extends AbstractTableModel {
     /**
      * Reset game state and notify the GUI
      */
-    public void reset() {
+    void reset() {
+        //createAltBoard();
         createStartBoard();
     }
 
@@ -40,12 +40,9 @@ public class Board extends AbstractTableModel {
         board = new Cell[width][height];
         for (int y=0; y<width; y++) { //fill board with cells
             for (int x=0; x<height; x++) {
-                System.out.print("["+x+","+y+"]");
-                board[x][y] = new Cell(x, y);
+                board[x][y] = new Cell(x, y, board);
             }
-            System.out.println();
         }
-        System.out.println();
         //setting even cells with a lighter colour
         for (int row = 0; row < height; row += 1) {
             for (int column = 0; column < width; column += 2) {
@@ -68,7 +65,7 @@ public class Board extends AbstractTableModel {
         for (int i = 0; i < 8; i += 2) { setCellBlack(i, 7, true); }
     }
 
-    void setCellBlack(int x, int y, boolean black) {
+    private void setCellBlack(int x, int y, boolean black) {
         Cell c = board[x][y];
         if(black)
             c.setBlack();
@@ -76,7 +73,7 @@ public class Board extends AbstractTableModel {
             c.setWhite();
     }
 
-    void setCellLighter(int x, int y) {
+    private void setCellLighter(int x, int y) {
         Cell c = board[x][y];
         c.setLighter();
     }
@@ -85,10 +82,17 @@ public class Board extends AbstractTableModel {
         int[][] boardData = new int[8][8];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if (board[x][y].isBlack()) {
-                    boardData[x][y] = 2;
-                } else if (board[x][y].isWhite()) {
-                    boardData[x][y] = 1;
+                Cell c = board[x][y];
+                if (c.isBlack()) {
+                    if (c.isKing())
+                        boardData[x][y] = 3;
+                    else
+                        boardData[x][y] = 1;
+                } else if (c.isWhite()) {
+                    if (c.isKing())
+                        boardData[x][y] = 4;
+                    else
+                        boardData[x][y] = 2;
                 } else {
                     boardData[x][y] = 0;
                 }
@@ -97,19 +101,12 @@ public class Board extends AbstractTableModel {
         return boardData;
     }
 
-    void printBoardData() {
-        int[][] boardData = getBoardData();
-        int rowNum = 8;
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                System.out.print(boardData[x][y] + " ");
-            }
-            System.out.print("| " + rowNum);
-            rowNum -= 1;
-            System.out.println();
-        }
-        System.out.println("----------------");
-        System.out.println("a b c d e f g h");
+    Cell[][] getBoard() {
+        return board;
+    }
+
+    void updateTable() {
+        game.updateTable();
     }
 
     /**

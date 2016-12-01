@@ -16,12 +16,20 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.table.*;
 
+/**
+ * Class responsible for all GUI
+ *
+ * @author Lucas
+ * @version 0.2
+ */
 class Window extends JFrame {
 
     private Board board;
-    private CheckersGame game;
-    public JTextField infoField;
-    private DefaultTableModel dtm;
+    private static CheckersGame game;
+    JTextField infoField;
+    Label finish;
+    private static boolean cannotPressHint;
+    Label playerTurn;
 
     //player names
     private TextField player1Name;
@@ -42,7 +50,8 @@ class Window extends JFrame {
     //label data
     private Font helv20 = new Font("Helvetica", Font.PLAIN, 20);
     private Font helv14 = new Font("Helvetica", Font.PLAIN, 14);
-    private Color textFore = new Color(191, 192, 190);
+    private Color textForeground = new Color(37, 35, 32);
+    private Color backgroundColor = new Color(191, 192, 190);
 
     //click vars
     private JTable jt;
@@ -51,24 +60,81 @@ class Window extends JFrame {
     private Cell targetCell;
 
     Window(CheckersGame g, Board b) {
-        super("AI Checkers");
+        super("Clever Checkers");
         game = g;
         board = b;
 
+        setResizable(false);
         setLayout(new BorderLayout());
-        setDefaultCloseOperation (WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         createMenus();
-        createTableView();
-        createTextField();
+        createGameView();
 
-        setSize (700, 500);
         pack();
         setVisible (true);
     }
 
-    private void createTableView() {
-        dtm = new DefaultTableModel(board.getRowCount(), board.getColumnCount()) {
+    private void createGameView() {
+        Panel gameView = new Panel();
+        gameView.setLayout(new BorderLayout());
+
+        gameView.add(createTableView(), BorderLayout.WEST);
+
+        Panel controlsView = new Panel();
+        controlsView.setLayout(new GridLayout(2,1));
+        controlsView.setBackground(backgroundColor);
+        controlsView.setPreferredSize(new Dimension(200, getContentPane().getHeight()));
+
+        controlsView.add(getNameView());
+
+        controlsView.add(createTextField());
+
+        gameView.add(controlsView);
+
+        getContentPane().add(gameView, BorderLayout.EAST);
+    }
+
+    private Panel getNameView() {
+        Panel nameView = new Panel();
+        nameView.setLayout(new GridLayout(5,1));
+        nameView.setBackground(backgroundColor);
+
+        Label p2NameLabel = new Label(game.getPlayer2().getName());
+        p2NameLabel.setForeground(textForeground);
+        p2NameLabel.setAlignment(Label.CENTER);
+        p2NameLabel.setFont(helv20);
+        nameView.add(p2NameLabel);
+
+        Label p2DifficultyLabel = new Label(game.getPlayer2().getDifficulty());
+        p2DifficultyLabel.setForeground(textForeground);
+        p2DifficultyLabel.setAlignment(Label.CENTER);
+        p2DifficultyLabel.setFont(helv14);
+        nameView.add(p2DifficultyLabel);
+
+        Label vsLabel = new Label("vs");
+        vsLabel.setForeground(textForeground);
+        vsLabel.setAlignment(Label.CENTER);
+        vsLabel.setFont(helv14);
+        nameView.add(vsLabel);
+
+        Label p1NameLabel = new Label(game.getPlayer1().getName());
+        p1NameLabel.setForeground(textForeground);
+        p1NameLabel.setAlignment(Label.CENTER);
+        p1NameLabel.setFont(helv20);
+        nameView.add(p1NameLabel);
+
+        Label p1DifficultyLabel = new Label(game.getPlayer1().getDifficulty());
+        p1DifficultyLabel.setForeground(textForeground);
+        p1DifficultyLabel.setAlignment(Label.CENTER);
+        p1DifficultyLabel.setFont(helv14);
+        nameView.add(p1DifficultyLabel);
+
+        return nameView;
+    }
+
+    private JTable createTableView() {
+        DefaultTableModel dtm = new DefaultTableModel(board.getRowCount(), board.getColumnCount()) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
@@ -89,7 +155,7 @@ class Window extends JFrame {
 
         jt.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseReleased(MouseEvent e) {
                 JTable tableTarget = (JTable)e.getSource();
                 int row = tableTarget.getSelectedRow();
                 int col = tableTarget.getSelectedColumn();
@@ -108,15 +174,8 @@ class Window extends JFrame {
                     }
                 } else if (numOfClicks == 2) { // if it's second click
                     targetCell = board.getValueAt(col, row);
-                    // if 2 clicks on same cell, cancel selection
-                    if (selectedCell == targetCell) {
-                        selectedCell.setSelected(false);
-                        selectedCell = null;
-                        targetCell = null;
-                        numOfClicks = 0;
-                    }
                     // if cell selected is another piece, select that one
-                    else if ((targetCell.isBlack() && game.player == 1) || (targetCell.isWhite() && game.player == 2)) {
+                    if ((targetCell.isBlack() && game.player == 1) || (targetCell.isWhite() && game.player == 2)) {
                         selectedCell.setSelected(false);
                         jt.repaint(jt.getCellRect(selectedCell.getyPos(), selectedCell.getxPos(), false));
                         selectedCell = targetCell;
@@ -126,25 +185,82 @@ class Window extends JFrame {
                         numOfClicks = 1;
                     } else {
                         //if not the same cell, try move
-                        System.out.println("Tar:" + col + "," + row);
-                        game.gotInput(selectedCell, targetCell); //send input to game
+                        //System.out.println("Tar:" + col + "," + row);
+                        new SendInput(selectedCell, targetCell).start(); //send input to game through thread
+                        jt.repaint(jt.getCellRect(selectedCell.getyPos(), selectedCell.getxPos(), false));
+                        jt.repaint(jt.getCellRect(targetCell.getyPos(), targetCell.getxPos(), false));
                         selectedCell.setSelected(false);
                         selectedCell = null;
                         targetCell = null;
-                        repaint();
                         numOfClicks = 0;
                     }
                 }
             }
         });
+        jt.setRowSelectionAllowed(false);
+        jt.setColumnSelectionAllowed(false);
         jt.setShowGrid(false);
         jt.setRowHeight(72);
-        getContentPane().add(jt, BorderLayout.NORTH);
+        return jt;
     }
 
-    private void createTextField() {
+    void updateTable() {
+        jt.repaint();
+        if (game.player == 1) {
+            if (!game.getPlayer1().isHuman()) new SendInput().start();
+        } else {
+            if (!game.getPlayer2().isHuman()) new SendInput().start();
+        }
+    }
+
+    private Panel createTextField() {
+        Panel p = new Panel();
+        p.setLayout(new BorderLayout());
         infoField = new JTextField("Ready to start");
-        getContentPane().add(infoField, BorderLayout.SOUTH);
+        p.add(infoField, BorderLayout.SOUTH);
+        finish = new Label();
+        finish.setForeground(textForeground);
+        finish.setFont(new Font("Helvetica", Font.BOLD, 34));
+        finish.setAlignment(Label.CENTER);
+        p.add(finish, BorderLayout.NORTH);
+
+        Button showHintButton = new Button("Show hint");
+        showHintButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Human playerNeedingHint;
+                if (!cannotPressHint) {
+                    if (game.player == 1) {
+                        playerNeedingHint = (Human) game.getPlayer1();
+                    } else { //player 2
+                        playerNeedingHint = (Human) game.getPlayer2();
+                    }
+                    try {
+                        playerNeedingHint.getHint();
+                        jt.repaint();
+                    } catch (GameException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
+        Panel buttonPanel = new Panel();
+        buttonPanel.add(showHintButton);
+        p.add(buttonPanel, BorderLayout.CENTER);
+
+        String pName;
+        if (game.player == 1) {
+            pName = game.getPlayer1().getName();
+        } else {
+            pName = game.getPlayer2().getName();
+        }
+        playerTurn = new Label("Turn: " + pName);
+        playerTurn.setForeground(textForeground);
+        playerTurn.setAlignment(Label.CENTER);
+        playerTurn.setFont(helv14);
+        p.add(playerTurn, BorderLayout.BEFORE_FIRST_LINE);
+
+        return p;
     }
 
     private void createMenus() {
@@ -174,9 +290,10 @@ class Window extends JFrame {
             }
         });
 
-        JMenuItem showHints = new JMenuItem("Show hints");
-        showHints.addActionListener(new ActionListener() {
+        JMenuItem showSimplifiedRules = new JMenuItem("Simplified rules");
+        showSimplifiedRules.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                displaySimplifiedRules();
             }
         });
 
@@ -185,7 +302,7 @@ class Window extends JFrame {
         game.add(exitGame);
         mb.add(game);
         help.add(showRules);
-        help.add(showHints);
+        help.add(showSimplifiedRules);
         mb.add(help);
         this.setJMenuBar(mb);
     }
@@ -194,14 +311,20 @@ class Window extends JFrame {
         final JFrame newGameFrame = new JFrame("New game...");
         newGameFrame.setDefaultCloseOperation(Window.DISPOSE_ON_CLOSE);
         newGameFrame.setAlwaysOnTop(true);
+        newGameFrame.setBackground(backgroundColor);
+        newGameFrame.setResizable(false);
+
         newGameFrame.setLayout(new BorderLayout());
-        newGameFrame.setBackground(new Color(37, 35, 32));
 
         // WEST
         newGameFrame.add(createPlayer1Panel(), BorderLayout.WEST);
 
         // CENTER
-        newGameFrame.add(new JSeparator(JSeparator.VERTICAL), BorderLayout.CENTER);
+        Panel sepPanel = new Panel();
+        sepPanel.setLayout(new BorderLayout());
+        sepPanel.setBackground(backgroundColor);
+        sepPanel.add(new JSeparator(JSeparator.VERTICAL), BorderLayout.CENTER);
+        newGameFrame.add(sepPanel, BorderLayout.CENTER);
 
         // EAST
         newGameFrame.add(createPlayer2Panel(), BorderLayout.EAST);
@@ -209,6 +332,7 @@ class Window extends JFrame {
         // SOUTH
         Panel gameSetup = new Panel();
         gameSetup.setLayout(new BorderLayout());
+        gameSetup.setBackground(backgroundColor);
         gameSetup.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.NORTH);
 
         Panel launchButtonPanel = new Panel();
@@ -224,7 +348,13 @@ class Window extends JFrame {
                         player2DifficultySlider.getValue()
                 );
                 newGameFrame.dispose();
-                new Window(game, game.getBoard());
+                getContentPane().remove(0);
+                getContentPane().revalidate();
+                createGameView();
+                getContentPane().repaint();
+                if (game.firstMoveIsAI) {
+                    game.makeAIMove();
+                }
             }
         });
         launchButtonPanel.add(launchButton);
@@ -235,16 +365,16 @@ class Window extends JFrame {
 
         //show on middle of screen
         newGameFrame.pack();
+        newGameFrame.setLocationRelativeTo(this);
         newGameFrame.setVisible(true);
         newGameFrame.repaint();
     }
 
     private void displayRules() {
-        JFrame rulesFrame = new JFrame("The rules of Draughts");
+        JFrame rulesFrame = new JFrame("The rules of Checkers/Draughts");
         rulesFrame.setDefaultCloseOperation(Window.DISPOSE_ON_CLOSE);
         rulesFrame.setAlwaysOnTop(true);
 
-        System.out.println("here");
         Path filePath = Paths.get(this.getClass().getResource("/files/rules.txt").getPath());
         ArrayList<String> lines;
         String html = "";
@@ -275,20 +405,47 @@ class Window extends JFrame {
             }
         });
         rulesFrame.add(new JScrollPane(ep));
-        rulesFrame.setVisible(true);
+        rulesFrame.pack();
         rulesFrame.setSize(500, 500);
+        rulesFrame.setLocationRelativeTo(this);
+        rulesFrame.setVisible(true);
+    }
+
+    private void displaySimplifiedRules() {
+        JFrame simpleRulesFrame = new JFrame("Simplified rules");
+        simpleRulesFrame.setDefaultCloseOperation(Window.DISPOSE_ON_CLOSE);
+        simpleRulesFrame.setAlwaysOnTop(true);
+
+        String simplifiedRules = "Simplified rules of Checkers/Draughts\n\n" +
+                "Goal:\nCapture all pieces of your opponent\n\n" +
+                "Actions:\n" +
+                "1: move piece diagonally by 1 square\n\n" +
+                "2: capture an opposing piece by moving diagonally by\n" +
+                "   2 squares, going over the piece you want to capture\n\n" +
+                "3: if a piece reaches the other side of the board,\n" +
+                "   it becomes a kingkings can move and take backwards";
+
+        Panel p = new Panel();
+        TextArea ta = new TextArea(simplifiedRules);
+        ta.setEditable(false);
+        simpleRulesFrame.add(ta);
+        simpleRulesFrame.pack();
+        simpleRulesFrame.setSize(400, 280);
+        simpleRulesFrame.setLocationRelativeTo(this);
+        simpleRulesFrame.setVisible(true);
     }
 
     private Panel createPlayer1Panel() {
         //Player 1 box
         Panel player1Panel = new Panel();
         player1Panel.setLayout(new GridLayout(5, 1));
+        player1Panel.setBackground(backgroundColor);
 
         // title
         Panel p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.CENTER));
-        Label l1 = new Label("White");
-        l1.setForeground(textFore);
+        Label l1 = new Label("Black");
+        l1.setForeground(textForeground);
         l1.setFont(helv20);
         p.add(l1);
         player1Panel.add(p);  // item 1
@@ -297,7 +454,7 @@ class Window extends JFrame {
         p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         player1HumanButton = new JRadioButton("Human", true);
-        player1HumanButton.setForeground(textFore);
+        player1HumanButton.setForeground(textForeground);
         player1HumanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -307,7 +464,7 @@ class Window extends JFrame {
             }
         });
         JRadioButton player1AIButton = new JRadioButton("AI");
-        player1AIButton.setForeground(textFore);
+        player1AIButton.setForeground(textForeground);
         player1AIButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -327,7 +484,7 @@ class Window extends JFrame {
         p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         Label l2 = new Label("Name:");
-        l2.setForeground(textFore);
+        l2.setForeground(textForeground);
         l2.setFont(helv14);
         p.add(l2);
         player1Name = new TextField("Human", 6);
@@ -339,7 +496,7 @@ class Window extends JFrame {
         player1DifficultyLabel.setLayout(new FlowLayout(FlowLayout.LEFT));
         player1DifficultyLabel.setVisible(false);
         Label l3 = new Label("Difficulty:");
-        l3.setForeground(textFore);
+        l3.setForeground(textForeground);
         l3.setFont(helv14);
         player1DifficultyLabel.add(l3);
         player1Panel.add(player1DifficultyLabel);  // item 4
@@ -353,13 +510,8 @@ class Window extends JFrame {
         player1DifficultySlider.addChangeListener(null);
         player1DifficultySlider.setPaintTicks(true);
         player1DifficultySlider.setSnapToTicks(true);
-        player1DifficultySlider.setForeground(textFore);
-        /*
-        Hashtable player1DifficultyTable = new Hashtable();
-        player1DifficultyTable.put(new Integer(1), new Label("1");
-        player1DifficultyTable.put(new Integer(5), new Label("5");
-        player1DifficultySlider.setLabelTable(player1DifficultyTable);
-        */
+        player1DifficultySlider.setForeground(textForeground);
+
         player1DifficultySliderPanel.add(player1DifficultySlider);
         player1Panel.add(player1DifficultySliderPanel);  // item 5
 
@@ -370,12 +522,13 @@ class Window extends JFrame {
         //Player 2 box
         Panel player2Panel = new Panel();
         player2Panel.setLayout(new GridLayout(5, 1));
+        player2Panel.setBackground(backgroundColor);
 
         // title
         Panel p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.CENTER));
-        Label l1 = new Label("Black");
-        l1.setForeground(textFore);
+        Label l1 = new Label("White");
+        l1.setForeground(textForeground);
         l1.setFont(helv20);
         p.add(l1);
         player2Panel.add(p);  // item 1
@@ -384,7 +537,7 @@ class Window extends JFrame {
         p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         player2HumanButton = new JRadioButton("Human");
-        player2HumanButton.setForeground(textFore);
+        player2HumanButton.setForeground(textForeground);
         player2HumanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -394,7 +547,7 @@ class Window extends JFrame {
             }
         });
         JRadioButton player2AIButton = new JRadioButton("AI", true);
-        player2AIButton.setForeground(textFore);
+        player2AIButton.setForeground(textForeground);
         player2AIButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -414,7 +567,7 @@ class Window extends JFrame {
         p = new Panel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         Label l2 = new Label("Name:");
-        l2.setForeground(textFore);
+        l2.setForeground(textForeground);
         l2.setFont(helv14);
         p.add(l2);
         player2Name = new TextField("AI", 6);
@@ -425,7 +578,7 @@ class Window extends JFrame {
         player2DifficultyLabel = new Panel();
         player2DifficultyLabel.setLayout(new FlowLayout(FlowLayout.LEFT));
         Label l3 = new Label("Difficulty:");
-        l3.setForeground(textFore);
+        l3.setForeground(textForeground);
         l3.setFont(helv14);
         player2DifficultyLabel.add(l3);
         player2Panel.add(player2DifficultyLabel);  // item 4
@@ -438,7 +591,7 @@ class Window extends JFrame {
         player2DifficultySlider.addChangeListener(null);
         player2DifficultySlider.setPaintTicks(true);
         player2DifficultySlider.setSnapToTicks(true);
-        player2DifficultySlider.setForeground(textFore);
+        player2DifficultySlider.setForeground(textForeground);
         /*
         Hashtable player1DifficultyTable = new Hashtable();
         player1DifficultyTable.put(new Integer(1), new Label("1");
@@ -479,6 +632,15 @@ class Window extends JFrame {
             Cell cellValue;
             if (v instanceof Cell) {
                 cellValue = (Cell) v;
+
+                /*
+                if (cellValue.isFree() && !cellValue.isHint()) {
+                    setText(cellValue.getxPos() + "," + cellValue.getyPos());
+                    setHorizontalAlignment(RIGHT);
+                    setVerticalAlignment(BOTTOM);
+                    setFont(new Font("Helvetica", Font.PLAIN, 9));
+                }*/
+
                 if (cellValue.isLighter()) {
                     setBackground(new Color(234, 235, 200));
                 } else {
@@ -515,7 +677,52 @@ class Window extends JFrame {
                         img = img.getScaledInstance(cellWidth-4, cellHeight-4, Image.SCALE_SMOOTH);
                         setIcon(new ImageIcon(img));
                     }
+                } else if (cellValue.isHint()) {
+                    ImageIcon i = new ImageIcon(this.getClass().getResource("/images/hint.png"));
+                    Image img = i.getImage();
+
+                    img = img.getScaledInstance(cellWidth-14, cellHeight-14, Image.SCALE_SMOOTH);
+                    setIcon(new ImageIcon(img));
                 }
+            }
+        }
+    }
+
+    class SendInput implements Runnable {
+        Cell selected, target;
+        Thread t;
+
+        SendInput(Cell selected, Cell target) {
+            this.selected = selected;
+            this.target = target;
+        }
+
+        SendInput() {}
+
+        @Override
+        public void run() {
+            if (game.player == 1) {
+                if (game.getPlayer1().isHuman() ) {
+                    if (selected != null) game.gotInput(selected, target);
+                    cannotPressHint = false;
+                } else {
+                    game.makeAIMove();
+                }
+            } else {
+                if (game.getPlayer2().isHuman()) {
+                    if (selected != null) game.gotInput(selected, target);
+                    cannotPressHint = false;
+                } else {
+                    game.makeAIMove();
+                }
+            }
+        }
+
+        void start() {
+            cannotPressHint = true;
+            if (t == null) {
+                t = new Thread(this);
+                t.start();
             }
         }
     }

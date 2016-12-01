@@ -1,194 +1,230 @@
 package code;
 
+import java.util.ArrayList;
+
 /**
- * Created by Lucas on 26/11/2016.
+ * Player interface, contains methods that Human and AI classes need to implement
+ *
+ * @author Lucas
+ * @version 0.2
  */
-public class Player {
+public interface Player {
 
-    private int number; // 1 for black, 2 for white
-    private Board board;
+    /**
+     * Method to try and make move on the board, checking for exceptions
+     * @param selected selected cell to move piece from
+     * @param target selected cell to move piece to
+     * @throws MoveException piece movement exception for invalid moves
+     */
+    String tryMove(Cell selected, Cell target) throws MoveException;
 
-    private String name;
-    private boolean human;
-    private int difficulty;
+    /**
+     * Makes AI come up with move then try it
+     */
+    void makeMove() throws GameException;
 
-    Player(int number, Board board, String name, boolean human, int difficulty) {
-        this.number = number;
-        this.board = board;
-        this.name = name;
-        this.human = human;
-        this.difficulty = difficulty;
+    /**
+     *
+     * @return human
+     */
+    boolean isHuman();
+
+    /**
+     *
+     * @return name
+     */
+    String getName();
+
+    /**
+     *
+     * @return difficulty
+     */
+    String getDifficulty();
+}
+
+/**
+ * Player functions, methods used by minimax and AIs
+ */
+class PlayerFunctions {
+
+
+    /**
+     * Gets available moves for a player
+     * @param board reference for cells
+     * @param number player number
+     * @return ArrayList of int[] with xPos, yPos, target xPos, target yPos
+     */
+     ArrayList<int[]> getAvailableMoves(Cell[][] board, int number) {
+        ArrayList<int[]> possibleMoves = new ArrayList<>();
+        ArrayList<Cell> allPieces;
+
+        //get a list of all pieces owned by player
+        allPieces = getPieces(board, number);
+
+        //for each cell, check if it has possible moves
+        for (Cell c : allPieces) {
+            int[] tryMove;
+            if (c.isKing()) {
+                tryMove = c.canKingMoveDownLeft();
+                if (tryMove != null) possibleMoves.add(tryMove);
+                tryMove = c.canKingMoveDownRight();
+                if (tryMove != null) possibleMoves.add(tryMove);
+            }
+            tryMove = c.canMoveLeft();
+            if (tryMove != null) possibleMoves.add(tryMove);
+            tryMove = c.canMoveRight();
+            if (tryMove != null) possibleMoves.add(tryMove);
+        }
+        return possibleMoves;
     }
 
-    boolean tryMove(Cell selection, Cell target) throws MoveException {
+    /**
+     * Gets available takes for a player
+     * @param board refrence for cells
+     * @param number player number
+     * @return ArrayList of int[] with xPos, yPos, target xPos, target yPos
+     */
+     ArrayList<int[]> getAvailableTakes(Cell[][] board, int number) {
+        ArrayList<int[]> possibleTakes = new ArrayList<>();
+        ArrayList<Cell> allPieces;
 
-        //System.out.println(target.getxPos() + ":" + selection.getxPos());
-        //System.out.println("|" + target.getxPos() + "=" + (selection.getxPos()+1) + ": " + (target.getxPos() == selection.getxPos()+1));
-        //System.out.println("|" + target.getxPos() + "=" + (selection.getxPos()-1) + ": " + (target.getxPos() == selection.getxPos()-1));
-        //System.out.println(target.getyPos() + ":" + selection.getyPos());
-        //System.out.println("|" + target.getyPos() + "=" + (selection.getyPos()-1) + ": " + (target.getxPos() == selection.getxPos()-1));
-
-        selection.printCellData();
-        target.printCellData();
-
-        // check cell is not free
-        if (selection.isFree())
-            throw new MoveException("No selected cell, try again");
-
-        // check target is free
-        if (!target.isFree())
-            throw new MoveException("Target cell is not free, try again");
-
-        if (number == 1) { // player 1 starts at the bottom, black
-            if (human) {
-                return tryBlackHuman(selection, target);
-            } else { // AI
-                minimaxBlack(selection, target);
+        //get a list of all pieces owned by player
+        allPieces = getPieces(board, number);
+        //for each cell, check if it has possible moves
+        for (Cell c : allPieces) {
+            int[] tryMove;
+            if (c.isKing()) {
+                tryMove = c.canKingTakeDownLeft();
+                if (tryMove != null) possibleTakes.add(tryMove);
+                tryMove = c.canKingTakeDownRight();
+                if (tryMove != null) possibleTakes.add(tryMove);
             }
-        } else { // player 2 starts at top of screen, white
-            if (human) {
-                return tryWhiteHuman(selection, target);
-            } else { // AI
-                minimaxWhite(selection, target);
-            }
+            tryMove = c.canTakeLeft();
+            if (tryMove != null) possibleTakes.add(tryMove);
+            tryMove = c.canTakeRight();
+            if (tryMove != null) possibleTakes.add(tryMove);
         }
-        return false;
+        return possibleTakes;
     }
 
-    private boolean tryBlackHuman(Cell selection, Cell target) throws MoveException {
-        // Exception that is assigned to if move is not 1 or 2 left or right
-        MoveException ex;
-
-        //check that cell is black
-        if (selection.isWhite())
-            throw new MoveException("Cannot move a white piece");
-
-        //check for move
-        if (target.getxPos() == selection.getxPos()+1 || target.getxPos() == selection.getxPos()-1) {
-            if (target.getyPos() == selection.getyPos() - 1) {
-                // checks are fine, make move
-                selection.setFree();
-                target.setBlack();
-                return true;
-            } else { // move seems correct
-                throw new MoveException("Move is not one cell forward");
+    /**
+     * Executes move on simulated board and assigns score. A take is worth 2 points.
+     * Crowning is worth 2 points. The points are divided bu the depth.
+     * @param board the board of int's
+     * @param move the move that needs to be exectued
+     * @param depth the depth of minimax
+     * @return Object with board and score
+     */
+     Object[] getBoardAfterMove(int[][] board, int[] move, int depth) {
+        boolean take = false;
+        double score = 0.00;
+        //check if move (can be king)
+        if (move[0] == move[2]+1 || move[0] == move[2]-1) {
+            board[move[2]][move[3]] = board[move[0]][move[1]]; //copy selected into target
+            board[move[0]][move[1]] = 0; //clear selected
+            if  ((board[move[0]][move[1]] == 3 && move[3] > move[1]) || (board[move[0]][move[1]] == 4 && move[3] < move[1])) {
+                score += (25/depth); //score for king move 25
             }
-        } else {
-            ex = new MoveException("Move is not 1 cell left or right");
+            if ((board[move[2]][move[3]] == 1 && move[3] == 0) || (board[move[2]][move[3]] == 2 && move[3] == 7)) {
+                score += (50/depth); //score for king 50
+            }
         }
+        //check if take
+        else if (move[0] == move[2]+2 || move[0] == move[2]-2) {
+            board[move[2]][move[3]] = board[move[0]][move[1]]; //copy selected into target
+            board[move[0]][move[1]] = 0; //clear selected
+            int x = (move[2] - move[0])/2;
+            int y = (move[3] - move[1])/2;
+            board[move[0]+x][move[1]+y] = 0; //clear taken cell
+            score += (100/depth); //score for take 100
+            if ((board[move[2]][move[3]] == 1 && move[3] == 0) || (board[move[2]][move[3]] == 2 && move[3] == 7)) {
+                score += (50/depth); //score for king 50
+            }
+        }
+        return new Object[]{board, score};
+    }
 
-        //check for take
-        // if target x is 2 left or right of selection x
-        if (target.getxPos() == selection.getxPos()+2 || target.getxPos() == selection.getxPos()-2) {
-            // if target y is 2 higher than selection
-            if (target.getyPos() == selection.getyPos()-2) {
-                //check that a white piece is in between
-                Cell whiteTarget;
-                // if take is towards right
-                System.out.println((target.getxPos() - selection.getxPos()));
-                if (target.getxPos() - selection.getxPos() > 0) // get right piece
-                    whiteTarget = board.getValueAt(selection.getxPos()+1, selection.getyPos()-1);
-                else // get left piece
-                    whiteTarget = board.getValueAt(selection.getxPos()-1, selection.getyPos()-1);
-                // check that piece is white
-                if (whiteTarget.isWhite()) {
-                    selection.setFree();
-                    whiteTarget.setFree();
-                    target.setBlack();
-                    return true;
-                } else { // cell is not white
-                    throw new MoveException("No white piece to take");
+    /**
+     * Converts an int board to a Cell[][] board
+     * @param board int board
+     * @return Cell board
+     */
+     Cell[][] convertIntToBoard(int[][] board) {
+        Cell[][] newBoard = new Cell[8][8];
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                Cell c = new Cell(x, y, newBoard);
+                switch (board[x][y]) {
+                    case 0:
+                        c.setFree();
+                        break;
+                    case 1:
+                        c.setBlack();
+                        break;
+                    case 2:
+                        c.setWhite();
+                        break;
+                    case 3:
+                        c.setBlack();
+                        c.setKing();
+                        break;
+                    case 4:
+                        c.setWhite();
+                        c.setKing();
+                        break;
                 }
-            } else { // target y is not 2 higher than selection
-                throw new MoveException("Take is not two cells forward");
+                newBoard[x][y] = c;
             }
-        } else {
-            ex = new MoveException("Take is not 2 cells left or right");
         }
-
-        //check for move and take if king
-        if (selection.isKing()) {
-            //check for move in opposite direction
-
-            //check for take in opposite direction
-        }
-
-        throw ex;
+        return newBoard;
     }
 
-    private boolean minimaxBlack(Cell selection, Cell target) throws MoveException {
-        return false;
-    }
-
-    private boolean tryWhiteHuman(Cell selection, Cell target) throws MoveException {
-        // Exception that is assigned to if move is not 1 or 2 left or right
-        MoveException ex;
-
-        //check that cell is white
-        if (selection.isBlack()) throw new MoveException("Cannot move a black piece");
-
-        //check for move
-        if (target.getxPos() == selection.getxPos()+1 || target.getxPos() == selection.getxPos()-1) {
-            if (target.getyPos() == selection.getyPos()+1) {
-                // checks are fine, make move
-                selection.setFree();
-                target.setWhite();
-                return true;
-            } else { // move seems correct
-                throw new MoveException("Move is not one cell forward");
-            }
-        } else {
-            ex = new MoveException("Move is not 1 cell left or right");
-        }
-
-        //check for take
-        // if target x is 2 left or right of selection x
-        if (target.getxPos() == selection.getxPos()+2 || target.getxPos() == selection.getxPos()-2) {
-            // if target y is 2 higher than selection
-            if (target.getyPos() == selection.getyPos()+2) {
-                //check that a black piece is in between
-                Cell blackTarget;
-                // if take is towards right
-                if (target.getxPos() - selection.getxPos() > 0) // get right piece
-                    blackTarget = board.getValueAt(selection.getxPos()+1, selection.getyPos()+1);
-                else // get left piece
-                    blackTarget = board.getValueAt(selection.getxPos()-1, selection.getyPos()+1);
-                // check that piece is black
-                if (blackTarget.isBlack()) {
-                    selection.setFree();
-                    blackTarget.setFree();
-                    target.setWhite();
-                    return true;
-                } else { // cell is not white
-                    throw new MoveException("No black piece to take");
+    /**
+     * Given the board of Cells and player number, returns an ArrayList of all player pieces.
+     * @param board current board
+     * @param black1white2 player number
+     * @return ArrayList<Cell> of all pieces of the player
+     */
+     private ArrayList<Cell> getPieces(Cell[][] board, int black1white2) {
+        ArrayList<Cell> output = new ArrayList<>();
+        boolean black = black1white2 == 1;
+        for (int y=0; y<8; y++) {
+            for (int x = 0; x < 8; x++) {
+                Cell c = board[x][y];
+                if (c.isBlack() == black && !c.isFree()) {
+                    output.add(c);
                 }
-            } else { // target y is not 2 higher than selection
-                throw new MoveException("Take is not two cells forward");
             }
-        } else {
-            ex = new MoveException("Take is not 2 cells left or right");
         }
-
-        //check for move and take if king
-        if (selection.isKing()) {
-            //check for move in opposite direction
-
-            //check for take in opposite direction
-        }
-        throw ex;
+        return output;
     }
 
-    private boolean minimaxWhite(Cell selection, Cell target) throws MoveException {
-        return false;
+    /**
+     * Copies the data from the board to create a new simulation
+     * @param board input board
+     * @return output board
+     */
+    int[][] copyData(int[][] board) {
+        int[][] output = new int[8][8];
+        int temp;
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                temp = board[x][y];
+                output[x][y] = temp;
+            }
+        }
+        return output;
     }
+}
 
-    public int getNumber() { return number; }
-
-    public String getName() { return name; }
-
-    public boolean isHuman() { return human; }
-
-    public int getDifficulty() { return difficulty; }
-
-    //public void setDifficulty(int difficulty) { this.difficulty = difficulty; }
+/**
+ * Class that stores the move and the score, for minimax
+ */
+class MoveAndScore {
+    int[] move;
+    double score;
+    MoveAndScore(int[] move, double score) {
+        this.move = move;
+        this.score = score;
+    }
 }
