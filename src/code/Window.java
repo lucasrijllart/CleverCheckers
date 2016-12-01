@@ -29,6 +29,7 @@ class Window extends JFrame {
     JTextField infoField;
     Label finish;
     private static boolean cannotPressHint;
+    Label playerTurn;
 
     //player names
     private TextField player1Name;
@@ -248,6 +249,19 @@ class Window extends JFrame {
         Panel buttonPanel = new Panel();
         buttonPanel.add(showHintButton);
         p.add(buttonPanel, BorderLayout.CENTER);
+
+        String pName;
+        if (game.player == 1) {
+            pName = game.getPlayer1().getName();
+        } else {
+            pName = game.getPlayer2().getName();
+        }
+        playerTurn = new Label("Turn: " + pName);
+        playerTurn.setForeground(textForeground);
+        playerTurn.setAlignment(Label.CENTER);
+        playerTurn.setFont(helv14);
+        p.add(playerTurn, BorderLayout.BEFORE_FIRST_LINE);
+
         return p;
     }
 

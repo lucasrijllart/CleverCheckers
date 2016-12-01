@@ -8,7 +8,7 @@ import java.util.Arrays;
  * @version 0.2
  */
 
-public class Cell {
+class Cell {
 
     private int xPos;
     private int yPos;
