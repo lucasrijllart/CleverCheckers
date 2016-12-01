@@ -85,6 +85,7 @@ class Window extends JFrame {
         Panel controlsView = new Panel();
         controlsView.setLayout(new GridLayout(2,1));
         controlsView.setBackground(backgroundColor);
+        controlsView.setPreferredSize(new Dimension(200, getContentPane().getHeight()));
 
         controlsView.add(getNameView());
 
@@ -174,15 +175,8 @@ class Window extends JFrame {
                     }
                 } else if (numOfClicks == 2) { // if it's second click
                     targetCell = board.getValueAt(col, row);
-                    // if 2 clicks on same cell, cancel selection
-                    if (selectedCell == targetCell) {
-                        selectedCell.setSelected(false);
-                        selectedCell = null;
-                        targetCell = null;
-                        numOfClicks = 0;
-                    }
                     // if cell selected is another piece, select that one
-                    else if ((targetCell.isBlack() && game.player == 1) || (targetCell.isWhite() && game.player == 2)) {
+                    if ((targetCell.isBlack() && game.player == 1) || (targetCell.isWhite() && game.player == 2)) {
                         selectedCell.setSelected(false);
                         jt.repaint(jt.getCellRect(selectedCell.getyPos(), selectedCell.getxPos(), false));
                         selectedCell = targetCell;

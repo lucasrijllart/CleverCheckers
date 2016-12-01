@@ -122,7 +122,7 @@ class PlayerFunctions {
         if (move[0] == move[2]+1 || move[0] == move[2]-1) {
             board[move[2]][move[3]] = board[move[0]][move[1]]; //copy selected into target
             board[move[0]][move[1]] = 0; //clear selected
-            if  ((board[move[0]][move[1]] == 1 && move[3] > move[1]) || (board[move[0]][move[1]] == 2 && move[3] < move[1])) {
+            if  ((board[move[0]][move[1]] == 3 && move[3] > move[1]) || (board[move[0]][move[1]] == 4 && move[3] < move[1])) {
                 score += (50/depth); //score for king move 50
             }
             if ((board[move[2]][move[3]] == 1 && move[3] == 0) || (board[move[2]][move[3]] == 2 && move[3] == 7)) {
@@ -136,14 +136,10 @@ class PlayerFunctions {
             int x = (move[2] - move[0])/2;
             int y = (move[3] - move[1])/2;
             board[move[0]+x][move[1]+y] = 0; //clear taken cell
-            score += (2/depth); //score for take 10
-            take = true;
+            score += (100/depth); //score for take 100
             if ((board[move[2]][move[3]] == 1 && move[3] == 0) || (board[move[2]][move[3]] == 2 && move[3] == 7)) {
-                score += (100/depth); //score for king 100
+                score += (150/depth); //score for king 150
             }
-        }
-        if (score != 0) {
-            //System.out.println("Take:" + take + "| score:" + score + "| depth:" + depth);
         }
         return new Object[]{board, score};
     }
