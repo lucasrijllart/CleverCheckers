@@ -61,7 +61,7 @@ class Window extends JFrame {
     private Cell targetCell;
 
     Window(CheckersGame g, Board b) {
-        super("AI Checkers");
+        super("Clever Checkers");
         game = g;
         board = b;
 
@@ -634,12 +634,13 @@ class Window extends JFrame {
             if (v instanceof Cell) {
                 cellValue = (Cell) v;
 
+                /*
                 if (cellValue.isFree() && !cellValue.isHint()) {
                     setText(cellValue.getxPos() + "," + cellValue.getyPos());
                     setHorizontalAlignment(RIGHT);
                     setVerticalAlignment(BOTTOM);
                     setFont(new Font("Helvetica", Font.PLAIN, 9));
-                }
+                }*/
 
                 if (cellValue.isLighter()) {
                     setBackground(new Color(234, 235, 200));

@@ -123,10 +123,10 @@ class PlayerFunctions {
             board[move[2]][move[3]] = board[move[0]][move[1]]; //copy selected into target
             board[move[0]][move[1]] = 0; //clear selected
             if  ((board[move[0]][move[1]] == 3 && move[3] > move[1]) || (board[move[0]][move[1]] == 4 && move[3] < move[1])) {
-                score += (50/depth); //score for king move 50
+                score += (25/depth); //score for king move 25
             }
             if ((board[move[2]][move[3]] == 1 && move[3] == 0) || (board[move[2]][move[3]] == 2 && move[3] == 7)) {
-                score += (150/depth); //score for king 150
+                score += (50/depth); //score for king 50
             }
         }
         //check if take
@@ -138,7 +138,7 @@ class PlayerFunctions {
             board[move[0]+x][move[1]+y] = 0; //clear taken cell
             score += (100/depth); //score for take 100
             if ((board[move[2]][move[3]] == 1 && move[3] == 0) || (board[move[2]][move[3]] == 2 && move[3] == 7)) {
-                score += (150/depth); //score for king 150
+                score += (50/depth); //score for king 50
             }
         }
         return new Object[]{board, score};

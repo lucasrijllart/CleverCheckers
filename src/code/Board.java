@@ -40,7 +40,6 @@ public class Board extends AbstractTableModel {
         board = new Cell[width][height];
         for (int y=0; y<width; y++) { //fill board with cells
             for (int x=0; x<height; x++) {
-                System.out.print("["+x+","+y+"]");
                 board[x][y] = new Cell(x, y, board);
             }
             System.out.println();
@@ -72,7 +71,6 @@ public class Board extends AbstractTableModel {
         board = new Cell[width][height];
         for (int y=0; y<width; y++) { //fill board with cells
             for (int x=0; x<height; x++) {
-                System.out.print("["+x+","+y+"]");
                 board[x][y] = new Cell(x, y, board);
             }
             System.out.println();
