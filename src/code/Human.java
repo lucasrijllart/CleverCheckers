@@ -1,7 +1,6 @@
 package code;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Class for human players, does actions through the GUI
